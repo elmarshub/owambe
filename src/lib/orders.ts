@@ -1,12 +1,12 @@
 import { z } from "zod";
-import { AREAS, DELIVERY, SIZES, findPiece } from "./catalog";
+import { AREAS, DELIVERY, MAX_QTY, SIZES, findPiece } from "./catalog";
 
 /** What the browser sends when you press Pay. Prices are NOT accepted from the browser. */
 export const CheckoutInput = z.object({
   items: z.array(z.object({
     id: z.string(),
     size: z.enum(SIZES),
-    qty: z.number().int().min(1).max(10),
+    qty: z.number().int().min(1).max(MAX_QTY),
     acc: z.boolean(),
   })).min(1).max(20),
   delivery: z.object({

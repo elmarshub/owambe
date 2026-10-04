@@ -56,6 +56,7 @@ export const PIECES: Piece[] = [
 
 export const SIZES = ["S", "M", "L", "XL", "XXL"] as const;
 export type Size = (typeof SIZES)[number];
+export const MAX_QTY = 10;
 
 export const DELIVERY = {
   std: { label: "Standard", note: "2 to 4 days", fee: 4500 },
@@ -66,6 +67,26 @@ export type Speed = keyof typeof DELIVERY;
 export const AREAS = ["Lekki", "Ikoyi", "Victoria Island", "Ikeja", "Yaba", "Surulere", "Ajah"] as const;
 
 export const findPiece = (id: string) => PIECES.find((p) => p.id === id);
+
+export interface BagLine {
+  id: string;
+  size: Size;
+  qty: number;
+  acc: boolean;
+}
+
+/** Keeps only bag lines that still match the catalogue, so a bag saved before a drop changed can't break the page. */
+export function cleanBag(raw: unknown): BagLine[] {
+  if (!Array.isArray(raw)) return [];
+  return raw.flatMap((x) => {
+    if (!x || typeof x !== "object") return [];
+    const { id, size, qty, acc } = x as Record<string, unknown>;
+    if (typeof id !== "string" || !findPiece(id)) return [];
+    if (!SIZES.includes(size as Size)) return [];
+    if (typeof qty !== "number" || !Number.isInteger(qty) || qty < 1) return [];
+    return [{ id, size: size as Size, qty: Math.min(qty, MAX_QTY), acc: acc === true }];
+  });
+}
 export const linePieces = (line: Line) => PIECES.filter((p) => p.line === line);
 
 export const naira = (n: number) => "₦" + n.toLocaleString("en-NG");

@@ -121,6 +121,7 @@ footer b{color:var(--ink)}
 .bi .meta{font-size:13px;color:var(--muted)}
 .qty{display:flex;align-items:center;gap:8px;font-variant-numeric:tabular-nums;font-weight:700}
 .qty button{width:32px;height:32px;background:var(--chip);border-radius:50%}
+.qty button:disabled{opacity:.4;cursor:not-allowed}
 .empty{margin:auto;text-align:center;color:var(--muted);max-width:260px}
 .totals{display:flex;flex-direction:column;gap:8px;padding-top:16px;font-variant-numeric:tabular-nums}
 .row{display:flex;justify-content:space-between;gap:12px}
