@@ -72,6 +72,10 @@ prisma/                 schema.prisma, migrations/ (the first adds check constra
 
 `src/lib/config.ts` decides from env vars. No Supabase keys: any 6-digit code except `000000` signs you in and payment is simulated. Supabase keys: real sign-in. Plus Paystack keys and `DATABASE_URL`: real test payments and saved orders.
 
+## Deploy
+
+Netlify builds `main` (`netlify.toml`, pnpm). Environment variables are the same as `.env.local` except `DIRECT_URL` and `SUPABASE_SERVICE_ROLE_KEY`, with `NEXT_PUBLIC_SITE_URL=https://owambe.martinelmars.com`. DNS for martinelmars.com is on Cloudflare: CNAME `owambe` → `<site>.netlify.app`, proxy off. Supabase redirect URL: `https://owambe.martinelmars.com/auth/callback`. Paystack webhook: `https://owambe.martinelmars.com/api/paystack/webhook`. Run `pnpm db:migrate` yourself when the schema changes; deploys never touch the database.
+
 ## Commands
 
 `pnpm dev` · `pnpm build` · `pnpm start` · `pnpm test` · `pnpm e2e` (first `pnpm exec playwright install chromium`) · `pnpm typecheck` · `pnpm lint` · `pnpm db:migrate` · `pnpm db:migrate:dev` · `pnpm db:studio`
