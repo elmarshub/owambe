@@ -288,3 +288,6 @@ a.secondary,a.primary,a.back{text-decoration:none}
 .notfound .empty-hanger{width:180px;margin-bottom:8px}
 .notfound .primary{width:auto;padding-inline:32px;margin-top:8px}
 [data-motion="off"] .tag.swing,[data-motion="off"] .tag.swing::after,[data-motion="off"] .empty-hanger{animation:none}
+
+/* Netlify injects a badge iframe into published pages; keep it off the store */
+#nl-badge-frame,#nl-hud-frame{display:none!important}
