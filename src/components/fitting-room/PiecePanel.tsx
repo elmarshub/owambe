@@ -7,6 +7,7 @@ import { isBack, kick, useShop } from "@/store/shop";
 import { useBag } from "@/store/bag";
 import { useUi } from "@/store/ui";
 import { Segment } from "@/components/ui/Segment";
+import { flyToBag } from "@/lib/client/fly-to-bag";
 
 export function PiecePanel() {
   const s = useShop();
@@ -46,6 +47,30 @@ export function PiecePanel() {
     add({ id: p.id, size, acc: s.view === "dummy" && s.acc });
     showToast(`${p.name}, size ${size}, is in your bag`);
     kick(18);
+    flyToBag(p.id);
+  };
+
+  const share = async () => {
+    if (!p) return;
+    const url = `${window.location.origin}/pieces/${p.id}`;
+    const data = { title: `${p.name} · owambe.`, text: `${p.name}, ${p.colour}. Try it on at owambe.`, url };
+    const copy = async () => {
+      try {
+        await navigator.clipboard.writeText(url);
+        showToast("Link copied. Send it to someone who'd wear it.");
+      } catch {
+        showToast(url);
+      }
+    };
+    if (navigator.share && (!navigator.canShare || navigator.canShare(data))) {
+      try {
+        await navigator.share(data);
+      } catch (e) {
+        if ((e as Error).name !== "AbortError") await copy();
+      }
+      return;
+    }
+    await copy();
   };
 
   return (
@@ -92,6 +117,10 @@ export function PiecePanel() {
           </div>
           <p className="err">{err}</p>
           <button className="primary" onClick={addToBag}>Add to bag</button>
+          <button className="sharebtn" type="button" onClick={share}>
+            <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M12 3v12M7 8l5-5 5 5M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+            Share this piece
+          </button>
           <p className="small">{p.desc}</p>
         </>
       )}
