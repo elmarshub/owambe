@@ -74,7 +74,7 @@ prisma/                 schema.prisma, migrations/ (the first adds check constra
 
 ## Deploy
 
-Netlify builds `main` (`netlify.toml`, pnpm). Environment variables are the same as `.env.local` except `DIRECT_URL` and `SUPABASE_SERVICE_ROLE_KEY`, with `NEXT_PUBLIC_SITE_URL=https://owambe.martinelmars.com`. DNS for martinelmars.com is on Cloudflare: CNAME `owambe` → `<site>.netlify.app`, proxy off. Supabase redirect URL: `https://owambe.martinelmars.com/auth/callback`. Paystack webhook: `https://owambe.martinelmars.com/api/paystack/webhook`. Run `pnpm db:migrate` yourself when the schema changes; deploys never touch the database.
+Netlify builds `main` (`netlify.toml`, pnpm). Environment variables are the same as `.env.local` except `DIRECT_URL`, `SUPABASE_SERVICE_ROLE_KEY` and `NEXT_PUBLIC_SITE_URL`: leave the site URL unset so share links follow Netlify's `URL` (the primary domain, now `https://owambedrop.netlify.app`). DNS for martinelmars.com is on Cloudflare: CNAME `owambe` → `<site>.netlify.app`, proxy off. Supabase redirect URL: `https://owambe.martinelmars.com/auth/callback`. Paystack webhook: `https://owambe.martinelmars.com/api/paystack/webhook`. Run `pnpm db:migrate` yourself when the schema changes; deploys never touch the database.
 
 ## Commands
 
