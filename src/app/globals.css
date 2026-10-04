@@ -22,7 +22,9 @@ a{color:inherit}
 .tab{font-weight:700;font-size:13px;height:36px;padding:0 18px;border-radius:999px;color:var(--muted);display:flex;gap:8px;align-items:center}
 .tab small{font-size:11px;font-variant-numeric:tabular-nums;opacity:.8}
 .tab[aria-selected="true"]{background:var(--ink);color:var(--paper)}
-.tools{justify-self:end}
+.tools{justify-self:end;display:flex;align-items:center;gap:8px}
+.ghost{height:42px;padding:0 16px;border:1px solid var(--line);border-radius:999px;font-size:13px;font-weight:700;display:inline-flex;align-items:center;text-decoration:none;white-space:nowrap}
+.ghost:hover{border-color:var(--ink)}
 .bag{height:42px;padding:0 6px 0 16px;border:1px solid var(--line);border-radius:999px;font-size:13px;font-weight:700;display:inline-flex;align-items:center;gap:10px}
 .bag:hover{border-color:var(--ink)}
 .bagcount{min-width:30px;height:30px;border-radius:15px;background:var(--ink);color:var(--paper);font-size:12px;display:inline-grid;place-items:center;padding:0 8px;font-variant-numeric:tabular-nums}
@@ -162,13 +164,13 @@ label.f{display:flex;flex-direction:column;gap:6px;font-size:12px;font-weight:70
 .opt span{flex:1}
 .spin{width:16px;height:16px;border-radius:50%;border:2px solid currentColor;border-right-color:transparent;animation:rot .7s linear infinite}
 @keyframes rot{to{transform:rotate(360deg)}}
-.tag{align-self:center;width:min(300px,100%);border:1.5px solid var(--ink);padding:30px 24px 22px;text-align:center;display:flex;flex-direction:column;gap:12px;
-  clip-path:polygon(15% 0,85% 0,100% 7%,100% 100%,0 100%,0 7%);transform:rotate(-2deg);background:#fff}
+.tag{align-self:center;width:min(300px,100%);padding:30px 24px 22px;text-align:center;display:flex;flex-direction:column;gap:12px;transform:rotate(-2deg);background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' preserveAspectRatio='none'%3E%3Cpolygon points='15,0.5 85,0.5 99.5,7 99.5,99.5 0.5,99.5 0.5,7' fill='%23fff' stroke='%23151514' stroke-width='1.5' vector-effect='non-scaling-stroke'/%3E%3C/svg%3E") center/100% 100% no-repeat}
 .tag .hole{width:12px;height:12px;border-radius:50%;border:1.5px solid var(--ink);margin:0 auto}
 .tag .no{font-size:12px;font-weight:700;letter-spacing:.14em;color:var(--muted)}
 .tag h5{font-family:var(--display);font-weight:700;font-size:38px;letter-spacing:-.03em;margin:0;line-height:1}
-.toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 24px);transform:translate(-50%,20px);opacity:0;background:var(--ink);color:var(--paper);padding:12px 14px 12px 18px;border-radius:999px;font-size:14px;display:flex;gap:14px;align-items:center;transition:all .35s cubic-bezier(.22,1,.36,1);z-index:70;pointer-events:none;max-width:calc(100% - 32px)}
-.toast.show{opacity:1;transform:translate(-50%,0);pointer-events:auto}
+.toast{position:fixed;right:clamp(16px,4vw,48px);top:calc(env(safe-area-inset-top,0px) + 84px);width:fit-content;max-width:min(440px,calc(100% - 32px));transform:translateY(-12px);opacity:0;background:var(--ink);color:var(--paper);padding:12px 14px 12px 18px;border-radius:999px;font-size:14px;line-height:1.35;display:flex;gap:14px;align-items:center;transition:all .35s cubic-bezier(.22,1,.36,1);z-index:70;pointer-events:none}
+.toast.show{opacity:1;transform:none;pointer-events:auto}
+.toast button{flex:none}
 .toast button{text-decoration:underline;font-weight:700;color:var(--paper)}
 
 @media (max-width:760px){
@@ -176,19 +178,33 @@ label.f{display:flex;flex-direction:column;gap:6px;font-size:12px;font-weight:70
   .tabs{grid-column:1/-1;grid-row:2;justify-self:start}
   .tools{grid-row:1;grid-column:2}
   .drop{display:none}
-  .under{grid-template-columns:1fr auto}
-  .caption{grid-column:1/-1;grid-row:1;text-align:left}
-  .panel{position:static;width:100%;transform:translateY(16px);margin-top:4px;display:none}
-  .panel.show{display:flex}
   .sheet{left:0;right:0;top:auto;bottom:0;width:100%;max-height:92%;border-radius:20px 20px 0 0;transform:translateY(100%);padding:20px 20px calc(env(safe-area-inset-bottom,0px) + 24px)}
   .sheet.show{transform:none}
   .grid2{grid-template-columns:1fr}
+  .toast{left:16px;right:16px;margin-inline:auto;top:calc(env(safe-area-inset-top,0px) + 12px)}
+}
+@media (max-width:900px){
+  .shop{display:flex;flex-direction:column}
+  .scene{display:contents}
+  .titlebar{order:0}
+  .shop .back{order:1;align-self:flex-start}
+  .stage{order:2}
+  .under{order:3;grid-template-columns:1fr auto}
+  .caption{grid-column:1/-1;grid-row:1;text-align:left}
+  .under[data-open] .caption{display:none}
+  .swatches{order:4}
+  .panel{order:5;position:static;width:100%;transform:translateY(16px);margin-top:8px;display:none}
+  .panel.show{display:flex}
+  .rail,.rail.open{left:0;right:0}
+  .rail::before,.rail::after{display:none}
+}
+@media (max-width:420px){
+  .row2{grid-template-columns:1fr}
 }
 @media (prefers-reduced-motion:reduce){*{transition-duration:.01ms!important;animation-duration:.01ms!important}}
 
 /* Rail: tighter ends while a piece is open in the fitting room. */
 .rail.open{left:5%;right:5%}
-@media (max-width:760px){.rail.open{left:4%;right:4%}}
 
 /* Which face of a piece is showing is set by the physics loop (data-show), not by React. */
 .piece .face{display:none}
@@ -208,7 +224,8 @@ label.f{display:flex;flex-direction:column;gap:6px;font-size:12px;font-weight:70
 .opts{display:flex;flex-direction:column;gap:8px}
 .payline{padding:10px 0;border-bottom:1px solid var(--line);font-size:14px}
 .tagtotals{text-align:left;font-size:13px}
-a.secondary,a.primary{text-decoration:none}
+a.secondary,a.primary,a.back{text-decoration:none}
+.orders .back{align-self:flex-start;margin-top:0}
 .sw{display:block}
 
 /* Orders page */

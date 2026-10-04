@@ -22,7 +22,6 @@ async function call<T>(path: string, init?: RequestInit): Promise<T> {
   return body.data;
 }
 
-/** Starts a transaction. Amount in naira (converted to kobo here). Returns the access code for the popup. */
 export function initializeTransaction(o: { email: string; amountNaira: number; reference: string; metadata?: Record<string, unknown> }) {
   return call<{ authorization_url: string; access_code: string; reference: string }>("/transaction/initialize", {
     method: "POST",
@@ -40,12 +39,10 @@ export interface VerifiedTransaction {
   customer: { email: string };
 }
 
-/** Asks Paystack directly whether a payment went through. Never trust the browser's word for it. */
 export function verifyTransaction(reference: string) {
   return call<VerifiedTransaction>(`/transaction/verify/${encodeURIComponent(reference)}`);
 }
 
-/** Checks a webhook really came from Paystack: HMAC-SHA512 of the raw body with the secret key. */
 export function validWebhookSignature(rawBody: string, signature: string | null) {
   if (!signature) return false;
   const expected = createHmac("sha512", secret()).update(rawBody).digest("hex");
