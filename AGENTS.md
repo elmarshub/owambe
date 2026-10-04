@@ -38,17 +38,19 @@ It sells finished, sewn pieces (agbada, kaftan, buba and sokoto, iro and buba), 
 
 ## Layout
 
+No `src/` folder: everything sits at the project root.
+
 ```
-src/
-  app/                  routes only: page, pieces/[id], orders, api/*, auth/callback, metadata files
-  components/           by feature: store, rail, fitting-room, bag, checkout (+ steps/), orders, ui
-  lib/                  shared by server and browser: catalog, fit, garments, orders (zod + pricing),
+app/                    routes only: page, pieces/[id], orders, api/*, auth/callback, not-found, metadata files
+components/             by feature: store, rail, fitting-room, bag, checkout (+ steps/), orders, ui
+lib/                    shared by server and browser: catalog, fit, garments, orders (zod + pricing),
                         redirect, config, layout, site
-    server/             server-only: db (Prisma), orders, paystack, supabase, piece-image (OG images)
-    client/             browser-only: auth, payment, supabase
-  hooks/  store/  types/
-  generated/prisma/     generated client (git-ignored; pnpm install / pnpm build regenerate it)
-  proxy.ts              Next 16 "proxy" (was middleware): keeps the Supabase session fresh
+  server/               server-only: db (Prisma), orders, paystack, supabase, piece-image (OG images)
+  client/               browser-only: auth, payment, supabase, fly-to-bag
+hooks/  store/  types/
+assets/og/              fonts and texture for the generated share images (traced into the function bundle)
+generated/prisma/       generated client (git-ignored; pnpm install / pnpm build regenerate it)
+proxy.ts                Next 16 "proxy" (was middleware): keeps the Supabase session fresh
 prisma/                 schema.prisma, migrations/ (the first adds check constraints and RLS by hand)
 ```
 

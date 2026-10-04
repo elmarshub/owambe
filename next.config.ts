@@ -11,8 +11,8 @@ const securityHeaders = [
 const nextConfig: NextConfig = {
   headers: async () => [{ source: "/:path*", headers: securityHeaders }],
   outputFileTracingIncludes: {
-    "/pieces/[id]/opengraph-image/[__metadata_id__]": ["./src/assets/og/**"],
-    "/pieces/[id]/twitter-image/[__metadata_id__]": ["./src/assets/og/**"],
+    "/pieces/[id]/opengraph-image/[__metadata_id__]": ["./assets/og/**"],
+    "/pieces/[id]/twitter-image/[__metadata_id__]": ["./assets/og/**"],
   },
 };
 

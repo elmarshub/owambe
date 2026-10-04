@@ -8,7 +8,7 @@ import { SITE_URL } from "@/lib/site";
 
 export const pieceImageSize = { width: 1200, height: 630 };
 
-const asset = (file: string) => readFile(join(process.cwd(), "src/assets/og", file));
+const asset = (file: string) => readFile(join(process.cwd(), "assets/og", file));
 
 export async function pieceImage(id: string) {
   const p = findPiece(id);
