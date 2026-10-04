@@ -1,48 +1,88 @@
 import "server-only";
-import { supabaseAdmin } from "@/lib/supabase/server";
+import { db } from "@/lib/db";
+import type { CheckoutInput, PricedLine } from "@/lib/orders";
 import type { VerifiedTransaction } from "@/lib/paystack";
+import type { Prisma } from "@/generated/prisma/client";
 
-export interface OrderRow {
-  id: string;
+const withItems = { items: { orderBy: { id: "asc" } } } satisfies Prisma.OrderInclude;
+export type OrderWithItems = Prisma.OrderGetPayload<{ include: typeof withItems }>;
+
+interface NewOrder {
   ref: string;
-  user_id: string | null;
+  userId: string;
   email: string;
-  items: { id: string; name: string; colour: string; size: string; qty: number; acc: boolean; unit: number; total: number }[];
+  lines: PricedLine[];
   subtotal: number;
-  delivery_fee: number;
+  deliveryFee: number;
   total: number;
-  delivery: { name: string; phone: string; address: string; area: string; speed: "std" | "exp" };
-  status: "pending" | "paid" | "failed";
-  paid_at: string | null;
-  created_at: string;
+  delivery: CheckoutInput["delivery"];
 }
 
-export async function getOrder(ref: string) {
-  const { data, error } = await supabaseAdmin().from("orders").select("*").eq("ref", ref).maybeSingle();
-  if (error) throw error;
-  return data as OrderRow | null;
+/** Saves a pending order and its lines in one write. */
+export function createOrder(o: NewOrder) {
+  return db().order.create({
+    data: {
+      ref: o.ref,
+      userId: o.userId,
+      email: o.email,
+      subtotal: o.subtotal,
+      deliveryFee: o.deliveryFee,
+      total: o.total,
+      deliveryName: o.delivery.name,
+      phone: o.delivery.phone,
+      address: o.delivery.address,
+      area: o.delivery.area,
+      speed: o.delivery.speed,
+      items: {
+        create: o.lines.map((l) => ({
+          pieceId: l.id, name: l.name, colour: l.colour, size: l.size, qty: l.qty, addOn: l.acc, unitPrice: l.unit, total: l.total,
+        })),
+      },
+    },
+  });
+}
+
+export function markFailed(ref: string) {
+  return db().order.updateMany({ where: { ref, status: "pending" }, data: { status: "failed" } });
+}
+
+export function getOrder(ref: string) {
+  return db().order.findUnique({ where: { ref }, include: withItems });
+}
+
+export function listOrders(userId: string) {
+  return db().order.findMany({ where: { userId }, include: withItems, orderBy: { createdAt: "desc" }, take: 50 });
 }
 
 /**
  * Marks an order paid if Paystack's verified transaction matches it exactly (status, currency, amount).
  * Safe to call twice (from the browser's verify call and from the webhook): it only moves pending → paid.
  */
-export async function settleOrder(order: OrderRow, tx: VerifiedTransaction) {
+export async function settleOrder(order: OrderWithItems, tx: VerifiedTransaction) {
   const matches = tx.status === "success" && tx.currency === "NGN" && tx.amount === order.total * 100;
   if (!matches) return { ok: false as const, reason: tx.status === "success" ? "Amount mismatch" : `Payment ${tx.status}` };
   if (order.status === "paid") return { ok: true as const, order };
-  const { data, error } = await supabaseAdmin()
-    .from("orders")
-    .update({ status: "paid", paid_at: tx.paid_at ?? new Date().toISOString(), paystack: { reference: tx.reference, channel: tx.channel, amount: tx.amount, paid_at: tx.paid_at } })
-    .eq("ref", order.ref)
-    .eq("status", "pending")
-    .select("*")
-    .maybeSingle();
-  if (error) throw error;
-  return { ok: true as const, order: (data as OrderRow | null) ?? { ...order, status: "paid" as const } };
+  await db().order.updateMany({
+    where: { ref: order.ref, status: "pending" },
+    data: {
+      status: "paid",
+      paidAt: tx.paid_at ? new Date(tx.paid_at) : new Date(),
+      paystack: { reference: tx.reference, channel: tx.channel, amount: tx.amount, paid_at: tx.paid_at },
+    },
+  });
+  // Read it back rather than assume: the other caller may have settled it, or it may not have been pending.
+  const fresh = await getOrder(order.ref);
+  if (fresh?.status !== "paid") return { ok: false as const, reason: `Order is ${fresh?.status ?? "missing"}` };
+  return { ok: true as const, order: fresh };
 }
 
 /** The slice of an order that's safe to send back to the shopper's browser. */
-export const publicOrder = (o: OrderRow) => ({
-  ref: o.ref, status: o.status, items: o.items, subtotal: o.subtotal, delivery: o.delivery_fee, total: o.total, paid_at: o.paid_at,
+export const publicOrder = (o: OrderWithItems) => ({
+  ref: o.ref,
+  status: o.status,
+  items: o.items.map((l) => ({ id: l.pieceId, name: l.name, size: l.size, qty: l.qty, acc: l.addOn, total: l.total })),
+  subtotal: o.subtotal,
+  delivery: o.deliveryFee,
+  total: o.total,
+  paid_at: o.paidAt?.toISOString() ?? null,
 });

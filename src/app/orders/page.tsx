@@ -1,10 +1,10 @@
-// My orders: the signed-in shopper's orders, read through row-level security (they only see their own).
+// My orders: Supabase says who is signed in, then the server loads only that user's orders.
 import type { Metadata } from "next";
 import Link from "next/link";
 import { AUTH_LIVE } from "@/lib/config";
 import { accLabel, naira } from "@/lib/catalog";
 import { supabaseServer } from "@/lib/supabase/server";
-import type { OrderRow } from "@/lib/orders-server";
+import { listOrders, type OrderWithItems } from "@/lib/orders-server";
 import { SignOutButton } from "./SignOutButton";
 
 export const metadata: Metadata = { title: "My orders · owambe." };
@@ -12,7 +12,7 @@ export const dynamic = "force-dynamic";
 
 export default async function OrdersPage() {
   let email: string | null = null;
-  let orders: OrderRow[] = [];
+  let orders: OrderWithItems[] = [];
   let failed = false;
 
   if (AUTH_LIVE) {
@@ -20,12 +20,12 @@ export default async function OrdersPage() {
     const { data: { user } } = await supabase.auth.getUser();
     email = user?.email ?? null;
     if (user) {
-      const { data, error } = await supabase.from("orders").select("*").order("created_at", { ascending: false }).limit(50);
-      if (error) {
+      try {
+        orders = await listOrders(user.id);
+      } catch (error) {
         console.error("orders: load failed", error);
         failed = true;
       }
-      orders = (data ?? []) as OrderRow[];
     }
   }
 
@@ -49,9 +49,9 @@ export default async function OrdersPage() {
               <b>{o.ref}</b>
               <span className={`pill ${o.status}`}>{o.status === "paid" ? "Paid (test)" : o.status === "pending" ? "Awaiting payment" : "Payment failed"}</span>
             </header>
-            <span className="small">{new Date(o.created_at).toLocaleString("en-NG", { dateStyle: "medium", timeStyle: "short" })} · to {o.delivery.area}</span>
-            {o.items.map((l, i) => (
-              <div className="row" key={i}><span>{l.name} · {l.size}{l.acc ? ` · ${accLabel(l.id, l.acc)}` : ""}{l.qty > 1 ? ` × ${l.qty}` : ""}</span><span>{naira(l.total)}</span></div>
+            <span className="small">{o.createdAt.toLocaleString("en-NG", { dateStyle: "medium", timeStyle: "short" })} · to {o.area}</span>
+            {o.items.map((l) => (
+              <div className="row" key={l.id}><span>{l.name} · {l.size}{l.addOn ? ` · ${accLabel(l.pieceId, l.addOn)}` : ""}{l.qty > 1 ? ` × ${l.qty}` : ""}</span><span>{naira(l.total)}</span></div>
             ))}
             <div className="row big"><span>Total</span><span>{naira(o.total)}</span></div>
           </article>
