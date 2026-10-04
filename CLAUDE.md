@@ -77,8 +77,9 @@ tests/unit, tests/e2e
 
 ## Commands
 
-- `npm run dev` · `npm run build` · `npm start`
-- `npm test` (Vitest) · `npm run e2e` (Playwright; first run `npx playwright install chromium`) · `npm run typecheck` · `npm run lint`
+- Package manager is **pnpm** (pinned in `package.json` `packageManager`). Don't add a `package-lock.json`.
+- `pnpm dev` · `pnpm build` · `pnpm start`
+- `pnpm test` (Vitest) · `pnpm e2e` (Playwright; first run `pnpm exec playwright install chromium`) · `pnpm typecheck` · `pnpm lint`
 
 ## Roadmap
 
