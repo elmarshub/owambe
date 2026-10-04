@@ -27,7 +27,7 @@ export function DoneStep({ order }: { order: PaidOrder }) {
         <div className="totals tagtotals">
           {order.items.map((l, i) => <div className="row" key={i}><span>{l.name} · {l.size}{l.acc ? ` · ${accLabel(l.id, l.acc)}` : ""}{l.qty > 1 ? ` × ${l.qty}` : ""}</span><span>{naira(l.total)}</span></div>)}
           <div className="row"><span>Delivery</span><span>{naira(order.delivery)}</span></div>
-          <div className="row big"><span>Paid (test)</span><span>{naira(order.total)}</span></div>
+          <div className="row big"><span>Paid</span><span>{naira(order.total)}</span></div>
         </div>
       </div>
       <button className="primary" type="button" onClick={() => { closeSheet(); deselect(); }}>Back to the rail</button>
