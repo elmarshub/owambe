@@ -15,7 +15,7 @@ export function DoneStep({ order }: { order: PaidOrder }) {
 
   return (
     <div className="step">
-      <div className="tag">
+      <div className="tag swing">
         <div className="hole" />
         <div className="no">ORDER {order.ref}</div>
         <h5 id="sheet-title">{order.confirming ? "Payment received." : <>It&apos;s yours.</>}</h5>

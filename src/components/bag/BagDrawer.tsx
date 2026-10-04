@@ -4,6 +4,7 @@ import { MAX_QTY, accLabel, findPiece, naira, unitPrice } from "@/lib/catalog";
 import { garmentSVG } from "@/lib/garments";
 import { bagSubtotal, useBag } from "@/store/bag";
 import { useUi } from "@/store/ui";
+import { EmptyHanger } from "@/components/ui/EmptyHanger";
 
 export function BagDrawer() {
   const { items, change } = useBag();
@@ -19,6 +20,7 @@ export function BagDrawer() {
       <div className="bagitems">
         {items.length === 0 ? (
           <div className="empty">
+            <EmptyHanger key={bagOpen ? "open" : "closed"} />
             <p className="emptyt">Your bag is empty.</p>
             <p className="small">Pick a piece off the rail to start.</p>
           </div>
