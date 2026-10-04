@@ -4,6 +4,7 @@ import { join } from "node:path";
 import { ImageResponse } from "next/og";
 import { findPiece, linePieces, naira } from "@/lib/catalog";
 import { garmentSVG } from "@/lib/garments";
+import { SITE_URL } from "@/lib/site";
 
 export const pieceImageSize = { width: 1200, height: 630 };
 
@@ -41,7 +42,7 @@ export async function pieceImage(id: string) {
           </div>
           <div style={{ display: "flex" }}>
             <div style={{ display: "flex", flexShrink: 0, border: "2px solid #151514", borderRadius: 999, padding: "10px 26px", fontSize: 24, fontWeight: 700 }}>
-              owambe.martinelmars.com
+              {new URL(SITE_URL).host}
             </div>
           </div>
         </div>
