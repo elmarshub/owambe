@@ -262,7 +262,7 @@ export function Rail() {
       </div>
       <div className="pieces">
         {list.map((p, i) => (
-          <div key={p.id} className="piece" ref={(el) => { pieceEls.current[i] = el; }}>
+          <div key={p.id} className="piece" data-id={p.id} ref={(el) => { pieceEls.current[i] = el; }}>
             <div className="card" ref={(el) => { cardEls.current[i] = el; }}>
               <div className="face f-front" dangerouslySetInnerHTML={{ __html: faces[i]?.front ?? "" }} />
               <div className="face f-back" dangerouslySetInnerHTML={{ __html: faces[i]?.back ?? "" }} />
