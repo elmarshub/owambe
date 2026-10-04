@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import { HomeLogo } from "@/components/ui/HomeLogo";
 import { PIECES } from "@/lib/catalog";
 import { useShop } from "@/store/shop";
 import { bagCount, useBag } from "@/store/bag";
@@ -19,7 +20,7 @@ export function Header() {
 
   return (
     <header className="top">
-      <Link className="mark" href="/" aria-label="Owambe">owambe<i>.</i></Link>
+      <HomeLogo />
       <nav className="tabs" role="tablist" aria-label="Line">
         {(["men", "women"] as const).map((l) => (
           <button key={l} className="tab" role="tab" aria-selected={line === l} onClick={() => setLine(l)}>

@@ -35,6 +35,7 @@ interface ShopState {
   setAcc: (a: boolean) => void;
   setSize: (id: string, s: Size) => void;
   setMotion: (m: boolean) => void;
+  reset: () => void;
 }
 
 export const isBack = (deg: number) => ((Math.round(deg / 180) % 2) + 2) % 2 === 1;
@@ -94,6 +95,7 @@ export const useShop = create<ShopState>((set, get) => ({
     kick(6);
   },
   setMotion: (motion) => set({ motion }),
+  reset: () => set({ line: "men", list: linePieces("men"), focus: null, hover: null, selected: null, spinBase: 0, view: "hanger" }),
 }));
 
 export const motionBus = { kick: 0 };
