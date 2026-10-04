@@ -7,13 +7,14 @@ import { PiecePanel } from "@/components/fitting-room/PiecePanel";
 import { BagDrawer } from "@/components/bag/BagDrawer";
 import { CheckoutSheet } from "@/components/checkout/CheckoutSheet";
 import { Toast } from "@/components/ui/Toast";
+import { findPiece } from "@/lib/catalog";
 import { AUTH_LIVE, PAY_LIVE } from "@/lib/config";
 import { currentUser, onUserChange } from "@/lib/client/auth";
 import { useBag } from "@/store/bag";
 import { useShop } from "@/store/shop";
 import { useUi } from "@/store/ui";
 
-export function Store() {
+export function Store({ initialPiece }: { initialPiece?: string }) {
   const selected = useShop((s) => s.selected);
   const deselect = useShop((s) => s.deselect);
   const motion = useShop((s) => s.motion);
@@ -29,10 +30,26 @@ export function Store() {
       const params = new URLSearchParams(window.location.search);
       if (params.get("checkout") === "1" && u) ui.openSheet();
       if (params.get("signin") === "failed") ui.showToast("Google sign-in didn't finish. Try again.");
-      if (params.has("checkout") || params.has("signin")) window.history.replaceState(null, "", "/");
+      if (params.has("checkout") || params.has("signin")) window.history.replaceState(null, "", window.location.pathname);
     });
     return onUserChange((u) => useUi.getState().setUser(u));
   }, [setMotion]);
+
+  useEffect(() => {
+    const piece = initialPiece ? findPiece(initialPiece) : undefined;
+    if (!piece) return;
+    const shop = useShop.getState();
+    shop.setLine(piece.line);
+    shop.select(useShop.getState().list.findIndex((p) => p.id === piece.id));
+  }, [initialPiece]);
+
+  useEffect(() => {
+    return useShop.subscribe((s, prev) => {
+      if (s.selected === prev.selected && s.list === prev.list) return;
+      const path = s.selected !== null ? `/pieces/${s.list[s.selected].id}` : "/";
+      if (window.location.pathname !== path) window.history.replaceState(null, "", path);
+    });
+  }, []);
 
   useEffect(() => {
     const onKey = (ev: KeyboardEvent) => {

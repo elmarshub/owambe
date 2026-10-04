@@ -7,7 +7,7 @@ import { supabaseServer } from "@/lib/server/supabase";
 import { listOrders, type OrderWithItems } from "@/lib/server/orders";
 import { SignOutButton } from "@/components/orders/SignOutButton";
 
-export const metadata: Metadata = { title: "My orders · owambe." };
+export const metadata: Metadata = { title: "My orders", robots: { index: false, follow: false } };
 export const dynamic = "force-dynamic";
 
 export default async function OrdersPage() {
