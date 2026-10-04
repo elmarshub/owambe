@@ -1,11 +1,10 @@
 "use client";
-// Shop state: which rail is showing, what's focused or open in the fitting room, and the fitting-room choices.
-// The rail's physics loop reads this with useShop.getState() every frame, so it never re-renders React.
+
 import { create } from "zustand";
 import { linePieces, type Line, type Piece, type Size } from "@/lib/catalog";
 import type { Build, Height } from "@/lib/fit";
 
-export type View = "hanger" | "dummy";
+type View = "hanger" | "dummy";
 
 interface ShopState {
   line: Line;
@@ -13,7 +12,6 @@ interface ShopState {
   focus: number | null;
   hover: number | null;
   selected: number | null;
-  /** Rotation of the open piece in degrees; multiples of 360 show the front, odd multiples of 180 the back. */
   spinBase: number;
   view: View;
   build: Build;
@@ -98,7 +96,6 @@ export const useShop = create<ShopState>((set, get) => ({
   setMotion: (motion) => set({ motion }),
 }));
 
-/** A sideways push on the open piece, so it swings when something changes. Consumed by the rail loop. */
 export const motionBus = { kick: 0 };
 export function kick(amount: number) {
   motionBus.kick += amount;

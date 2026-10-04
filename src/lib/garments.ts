@@ -1,11 +1,11 @@
 // Garments are drawn as SVG strings from shape paths, a woven fabric pattern and shading layers.
 // Everything is generated from our own code (no user input), so injecting the markup is safe.
-import { shortNaira, type Fabric, type Piece } from "./catalog";
-import { REC, type Build, type Height } from "./fit";
+import { shortNaira, type Fabric, type Piece } from "@/lib/catalog";
+import { REC, type Build, type Height } from "@/lib/fit";
 
-export type Side = "front" | "back";
+type Side = "front" | "back";
 
-export function fabric(f: Fabric, id: string): string {
+function fabric(f: Fabric, id: string): string {
   const { k, base, a, b, c } = f;
   if (k === "asooke") return `<pattern id="${id}" width="12" height="9" patternUnits="userSpaceOnUse"><rect width="12" height="9" fill="${base}"/><rect width="12" height="2" fill="${a}" opacity=".7"/><rect y="5" width="12" height="1" fill="${a}" opacity=".45"/><rect x="2" y="2.6" width="3" height="1.4" fill="${b}"/><rect x="8" y="6.6" width="3" height="1.2" fill="${b}" opacity=".8"/></pattern>`;
   if (k === "brocade") return `<pattern id="${id}" width="34" height="40" patternUnits="userSpaceOnUse"><rect width="34" height="40" fill="${base}"/><path d="M17 4 C 24 12 24 20 17 28 C 10 20 10 12 17 4 Z" fill="${a}"/><path d="M0 24 C 6 30 6 36 0 42 M34 24 C 28 30 28 36 34 42" fill="none" stroke="${a}" stroke-width="2"/><circle cx="17" cy="34" r="2" fill="${a}"/><circle cx="0" cy="8" r="2.4" fill="${a}"/><circle cx="34" cy="8" r="2.4" fill="${a}"/></pattern>`;
@@ -142,7 +142,7 @@ export function garmentSVG(p: Piece, side: Side, uid: string, n?: number): strin
   ${hanger()}${underLayer(p, P, false)}${bodyLayer(p, P, back)}${!back && n ? priceTag(p, n) : ""}</svg>`;
 }
 
-export interface DummyOptions {
+interface DummyOptions {
   build: Build;
   height: Height;
   /** Index into SIZES; undefined means the suggested size. */

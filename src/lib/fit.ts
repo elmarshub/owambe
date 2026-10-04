@@ -1,4 +1,4 @@
-import { SIZES, type Size } from "./catalog";
+import { SIZES, type Size } from "@/lib/catalog";
 
 export const BUILDS = ["Slim", "Regular", "Broad"] as const;
 export const HEIGHTS = ["Under 1.70 m", "1.70 to 1.85 m", "Over 1.85 m"] as const;
@@ -8,7 +8,7 @@ export type Height = 0 | 1 | 2;
 /** Suggested size index for each build: Slim → M, Regular → L, Broad → XL. */
 export const REC: Record<Build, number> = { 0: 1, 1: 2, 2: 3 };
 
-export interface FitAdvice {
+interface FitAdvice {
   tone: "ok" | "warn" | "bad";
   text: string;
 }

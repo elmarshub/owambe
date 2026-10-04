@@ -1,15 +1,9 @@
 "use client";
-// The bag lives in localStorage, so it survives a refresh and the Google sign-in redirect.
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { findPiece, type Size } from "@/lib/catalog";
+import { MAX_QTY, cleanBag, findPiece, unitPrice, type BagLine } from "@/lib/catalog";
 
-export interface BagItem {
-  id: string;
-  size: Size;
-  qty: number;
-  acc: boolean;
-}
+export type BagItem = BagLine;
 
 interface BagState {
   items: BagItem[];
@@ -25,7 +19,7 @@ export const useBag = create<BagState>()(
       add: (it) => {
         const items = [...get().items];
         const ex = items.findIndex((b) => b.id === it.id && b.size === it.size && b.acc === it.acc);
-        if (ex >= 0) items[ex] = { ...items[ex], qty: items[ex].qty + 1 };
+        if (ex >= 0) items[ex] = { ...items[ex], qty: Math.min(MAX_QTY, items[ex].qty + 1) };
         else items.push({ ...it, qty: 1 });
         set({ items });
       },
@@ -33,14 +27,22 @@ export const useBag = create<BagState>()(
         const items = [...get().items];
         const qty = items[index].qty + delta;
         if (qty <= 0) items.splice(index, 1);
-        else items[index] = { ...items[index], qty };
+        else items[index] = { ...items[index], qty: Math.min(MAX_QTY, qty) };
         set({ items });
       },
       clear: () => set({ items: [] }),
     }),
-    { name: "owambe-bag", skipHydration: true },
+    {
+      name: "owambe-bag",
+      skipHydration: true,
+      merge: (saved, current) => ({ ...current, items: cleanBag((saved as Partial<BagState> | undefined)?.items) }),
+    },
   ),
 );
 
 export const bagCount = (items: BagItem[]) => items.reduce((s, b) => s + b.qty, 0);
-export const bagSubtotal = (items: BagItem[]) => items.reduce((s, b) => s + (findPiece(b.id)?.price ?? 0) * b.qty, 0);
+export const bagSubtotal = (items: BagItem[]) =>
+  items.reduce((s, b) => {
+    const p = findPiece(b.id);
+    return s + (p ? unitPrice(p, b.acc) * b.qty : 0);
+  }, 0);

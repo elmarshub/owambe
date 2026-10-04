@@ -53,3 +53,16 @@ test("a wrong code is rejected", async ({ page }) => {
   await page.getByLabel("Digit 1").fill("000000");
   await expect(page.locator(".err[role=alert]").filter({ hasText: "doesn't match" })).toBeVisible();
 });
+
+test("an old saved bag can't break the page, and the fila is charged", async ({ page }) => {
+  await page.addInitScript(() => {
+    const items = [{ id: "retired-piece", size: "L", qty: 1, acc: false }, { id: "royal", size: "L", qty: 1, acc: true }];
+    localStorage.setItem("owambe-bag", JSON.stringify({ state: { items }, version: 0 }));
+  });
+  await page.goto("/");
+  await openRail(page);
+  await expect(page.locator(".bagcount")).toHaveText("1");
+  await page.getByRole("button", { name: "Open bag" }).click();
+  await expect(page.locator(".bi .meta")).toContainText("with fila");
+  await expect(page.locator(".drawer .totals")).toContainText("₦193,000");
+});

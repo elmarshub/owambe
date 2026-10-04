@@ -42,6 +42,9 @@ next-env.d.ts
 
 !.env.example
 
+# generated Prisma client (pnpm install / pnpm build regenerate it)
+/src/generated/
+
 # test output
 /test-results/
 /playwright-report/

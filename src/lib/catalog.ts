@@ -1,6 +1,3 @@
-// The Drop 01 catalogue. Prices are in naira; Paystack amounts are converted to kobo on the server.
-// The server always re-prices from this file, so the client can never set its own price.
-
 export type Line = "men" | "women";
 export type GarmentType = "agbada" | "kaftan" | "buba" | "iro";
 export type FabricKind = "asooke" | "brocade" | "plain" | "adire" | "lace" | "ankara";
@@ -56,6 +53,7 @@ export const PIECES: Piece[] = [
 
 export const SIZES = ["S", "M", "L", "XL", "XXL"] as const;
 export type Size = (typeof SIZES)[number];
+export const MAX_QTY = 10;
 
 export const DELIVERY = {
   std: { label: "Standard", note: "2 to 4 days", fee: 4500 },
@@ -65,7 +63,30 @@ export type Speed = keyof typeof DELIVERY;
 
 export const AREAS = ["Lekki", "Ikoyi", "Victoria Island", "Ikeja", "Yaba", "Surulere", "Ajah"] as const;
 
+export const ACC_PRICE: Record<Piece["acc"], number> = { fila: 8000, gele: 12000 };
+
 export const findPiece = (id: string) => PIECES.find((p) => p.id === id);
+export const unitPrice = (p: Piece, acc: boolean) => p.price + (acc ? ACC_PRICE[p.acc] : 0);
+export const accLabel = (id: string, acc: boolean) => (acc ? `with ${findPiece(id)?.acc ?? "add-on"}` : "");
+
+export interface BagLine {
+  id: string;
+  size: Size;
+  qty: number;
+  acc: boolean;
+}
+
+export function cleanBag(raw: unknown): BagLine[] {
+  if (!Array.isArray(raw)) return [];
+  return raw.flatMap((x) => {
+    if (!x || typeof x !== "object") return [];
+    const { id, size, qty, acc } = x as Record<string, unknown>;
+    if (typeof id !== "string" || !findPiece(id)) return [];
+    if (!SIZES.includes(size as Size)) return [];
+    if (typeof qty !== "number" || !Number.isInteger(qty) || qty < 1) return [];
+    return [{ id, size: size as Size, qty: Math.min(qty, MAX_QTY), acc: acc === true }];
+  });
+}
 export const linePieces = (line: Line) => PIECES.filter((p) => p.line === line);
 
 export const naira = (n: number) => "₦" + n.toLocaleString("en-NG");

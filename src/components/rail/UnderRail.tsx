@@ -1,5 +1,4 @@
 "use client";
-// Under the rail: which piece you're on, its caption, the ‹ › arrows and the fabric swatches.
 import { naira } from "@/lib/catalog";
 import { swatchSVG } from "@/lib/garments";
 import { useShop } from "@/store/shop";

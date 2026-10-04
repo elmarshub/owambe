@@ -29,7 +29,7 @@ Read this first. It is the full context for anyone (or any AI assistant) working
 | Styling | One global stylesheet ported from the prototype (src/app/globals.css), with design tokens on `:root` |
 | State | Zustand: `useShop` (rail and fitting room), `useBag` (persisted to localStorage), `useUi` (overlays, signed-in user) |
 | Auth | Supabase Auth: 6-digit email code (OTP) or Google, via @supabase/ssr cookies |
-| Data | Supabase Postgres, one `orders` table with row-level security (supabase/migrations/0001_orders.sql) |
+| Data | Supabase Postgres through **Prisma 7** (`prisma/schema.prisma`, `@prisma/adapter-pg`): `orders` and `order_items`, RLS on with no policies so Supabase's REST API can't reach them |
 | Payments | Paystack: server initializes → Inline popup (`resumeTransaction`) → server verifies → webhook as backup |
 | Validation | zod (checkout input) |
 | Tests | Vitest (tests/unit), Playwright (tests/e2e) |
@@ -56,7 +56,7 @@ Note: Next 16 renamed middleware to **proxy** (`src/proxy.ts`). Check `node_modu
 - The browser sends only piece ids, sizes, quantities and delivery details. **The server re-prices from src/lib/catalog.ts**; never trust a price from the browser.
 - Amounts are stored in whole naira; Paystack gets kobo (`× 100`) in src/lib/paystack.ts.
 - An order is marked paid only after the server calls Paystack's verify endpoint and status, currency and amount all match (`settleOrder` in src/lib/orders-server.ts). The webhook checks the `x-paystack-signature` HMAC-SHA512 before doing anything.
-- `SUPABASE_SERVICE_ROLE_KEY` and `PAYSTACK_SECRET_KEY` are server-only. Never prefix them with `NEXT_PUBLIC_`, never log them, never paste them in chat.
+- `DATABASE_URL`, `DIRECT_URL` and `PAYSTACK_SECRET_KEY` are server-only. Never prefix them with `NEXT_PUBLIC_`, never log them, never paste them in chat.
 
 ## Files
 
@@ -68,17 +68,19 @@ src/
     api/checkout, api/paystack/verify, api/paystack/webhook
   components/     Store, Header, rail/ (Rail, UnderRail), panel/PiecePanel, bag/BagDrawer, checkout/ (sheet + steps), ui/
   lib/            catalog.ts (pieces, sizes, delivery), garments.ts (SVG drawing), fit.ts (fit advice),
-                  orders.ts (zod + pricing), orders-server.ts, paystack.ts, shop-client.ts (browser auth + pay), supabase/
+                  orders.ts (zod + pricing), orders-server.ts (Prisma queries), db.ts (Prisma client), paystack.ts, shop-client.ts (browser auth + pay), supabase/
   store/          shop.ts, bag.ts, ui.ts
   proxy.ts        keeps the Supabase session fresh
-supabase/migrations/0001_orders.sql
+prisma/           schema.prisma, migrations/ (SQL; the first one adds check constraints and RLS by hand)
+prisma.config.ts  Prisma 7 config: loads .env.local, DIRECT_URL for migrations
 tests/unit, tests/e2e
 ```
 
 ## Commands
 
-- `npm run dev` · `npm run build` · `npm start`
-- `npm test` (Vitest) · `npm run e2e` (Playwright; first run `npx playwright install chromium`) · `npm run typecheck` · `npm run lint`
+- Package manager is **pnpm** (pinned in `package.json` `packageManager`). Don't add a `package-lock.json`.
+- `pnpm dev` · `pnpm build` · `pnpm start`
+- `pnpm test` (Vitest) · `pnpm e2e` (Playwright; first run `pnpm exec playwright install chromium`) · `pnpm typecheck` · `pnpm lint`
 
 ## Roadmap
 
