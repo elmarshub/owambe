@@ -1,8 +1,5 @@
 import { defineConfig, devices } from "@playwright/test";
 
-// The e2e suite runs the store in demo mode on its own port, so it never touches real
-// Supabase or Paystack and never reuses a live dev server. Next won't override env vars
-// that are already set, so these blanks win over .env.local.
 const PORT = 3100;
 const demoEnv = {
   NEXT_PUBLIC_SUPABASE_URL: "",

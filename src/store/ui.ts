@@ -1,5 +1,4 @@
 "use client";
-// Overlays: the bag drawer, the checkout sheet and the toast.
 import { create } from "zustand";
 import type { ShopUser } from "@/lib/shop-client";
 
