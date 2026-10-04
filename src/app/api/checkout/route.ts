@@ -3,9 +3,9 @@ import { NextResponse } from "next/server";
 import { accLabel } from "@/lib/catalog";
 import { PAY_LIVE } from "@/lib/config";
 import { CheckoutInput, orderRef, priceOrder } from "@/lib/orders";
-import { initializeTransaction } from "@/lib/paystack";
-import { createOrder, markFailed } from "@/lib/orders-server";
-import { supabaseServer } from "@/lib/supabase/server";
+import { initializeTransaction } from "@/lib/server/paystack";
+import { createOrder, markFailed } from "@/lib/server/orders";
+import { supabaseServer } from "@/lib/server/supabase";
 
 export async function POST(request: Request) {
   if (!PAY_LIVE || !process.env.DATABASE_URL) return NextResponse.json({ error: "Payments are not configured" }, { status: 503 });

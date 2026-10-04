@@ -1,8 +1,8 @@
 // POST /api/paystack/webhook: Paystack's server-to-server confirmation, the backup in case the
 // shopper closes the tab before the browser's verify call. Set this URL in the Paystack dashboard.
 import { NextResponse } from "next/server";
-import { getOrder, settleOrder } from "@/lib/orders-server";
-import { validWebhookSignature, verifyTransaction } from "@/lib/paystack";
+import { getOrder, settleOrder } from "@/lib/server/orders";
+import { validWebhookSignature, verifyTransaction } from "@/lib/server/paystack";
 
 export async function POST(request: Request) {
   const raw = await request.text();

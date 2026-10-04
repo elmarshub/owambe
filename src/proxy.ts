@@ -1,4 +1,3 @@
-// Next 16 "proxy" (formerly middleware): keeps the Supabase session cookie fresh on every page request.
 import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 import { AUTH_LIVE, SUPABASE_ANON_KEY, SUPABASE_URL } from "@/lib/config";
@@ -22,6 +21,5 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  // Skip static files, images and the Paystack webhook (it has no session).
   matcher: ["/((?!_next/static|_next/image|favicon.ico|noise.png|api/paystack/webhook).*)"],
 };

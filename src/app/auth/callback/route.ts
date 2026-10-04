@@ -1,7 +1,7 @@
 // Google sign-in comes back here with a one-time code, which we swap for a session cookie.
 import { NextResponse } from "next/server";
 import { safeNextPath } from "@/lib/redirect";
-import { supabaseServer } from "@/lib/supabase/server";
+import { supabaseServer } from "@/lib/server/supabase";
 
 export async function GET(request: Request) {
   const url = new URL(request.url);
