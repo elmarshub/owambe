@@ -36,6 +36,10 @@ export function Store({ initialPiece }: { initialPiece?: string }) {
   }, [setMotion]);
 
   useEffect(() => {
+    document.documentElement.dataset.motion = motion ? "on" : "off";
+  }, [motion]);
+
+  useEffect(() => {
     const piece = initialPiece ? findPiece(initialPiece) : undefined;
     if (!piece) return;
     const shop = useShop.getState();
