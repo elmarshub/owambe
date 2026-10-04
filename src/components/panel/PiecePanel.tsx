@@ -1,5 +1,4 @@
 "use client";
-// The fitting room: name and price, hanger or dummy, front or back, build and height, size, add to bag.
 import { useEffect, useRef, useState } from "react";
 import { ACC_PRICE, SIZES, naira } from "@/lib/catalog";
 import { BUILDS, HEIGHTS, REC, fitAdvice, type Build, type Height } from "@/lib/fit";
@@ -15,8 +14,7 @@ export function PiecePanel() {
   const [err, setErr] = useState("");
   const ref = useRef<HTMLElement>(null);
 
-  // On desktop the panel floats beside the rail; grow the scene so a tall panel (fit box open)
-  // never covers the arrows and swatches underneath.
+  // The desktop panel is absolutely positioned, so grow the scene to stop it covering the arrows below.
   useEffect(() => {
     const panel = ref.current;
     const scene = panel?.parentElement;

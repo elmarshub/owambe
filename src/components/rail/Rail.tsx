@@ -1,7 +1,6 @@
 "use client";
-// The clothes rail. React renders the pieces once; a requestAnimationFrame loop moves them with springs.
-// Each piece turns in 2D: its width follows cos(angle) and the face swaps when it passes edge-on,
-// so "Back" always shows the real back of the garment.
+// React renders the pieces once; a requestAnimationFrame loop moves them with springs.
+// A turn is 2D: width follows cos(angle) and the face swaps edge-on, so "Back" shows the real back.
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef } from "react";
 import { SIZES, naira } from "@/lib/catalog";
 import { dummySVG, garmentSVG } from "@/lib/garments";
@@ -73,7 +72,6 @@ export function Rail() {
     measure();
   }, [list, measure]);
 
-  // Opening, switching and closing the fitting room.
   useLayoutEffect(() => {
     const prev = prevSelected.current;
     const G = geo.current;
@@ -95,7 +93,6 @@ export function Rail() {
     return () => window.removeEventListener("resize", measure);
   }, [measure]);
 
-  // The physics loop.
   useEffect(() => {
     let raf = 0;
     let last = performance.now();

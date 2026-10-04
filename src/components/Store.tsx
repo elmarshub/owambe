@@ -21,7 +21,6 @@ export function Store() {
   const { bagOpen, sheetOpen, closeBag, closeSheet } = useUi();
 
   useEffect(() => {
-    // Bring back the saved bag, respect reduced motion, and pick up who's signed in.
     useBag.persist.rehydrate();
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) setMotion(false);
     const ui = useUi.getState();
