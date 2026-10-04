@@ -7,7 +7,7 @@ Built in public by [Martin Ifeanyi](https://www.martinelmars.com).
 
 ## Stack
 
-Next.js 16 · React 19 · TypeScript · Zustand · Supabase (Auth + Postgres) · Paystack · Netlify
+Next.js 16 · React 19 · TypeScript · Zustand · Supabase Auth · Postgres with Prisma · Paystack · Netlify
 
 - The rail is a hand-written spring simulation in a `requestAnimationFrame` loop. Pieces turn in 2D and swap faces edge-on, so "Back" shows the real back.
 - Garments, hangers, price tags and the dummy are SVG drawn in code.
@@ -28,9 +28,10 @@ With no keys, the store runs in **demo mode**: any 6-digit code signs you in (ex
 
 1. **Supabase**
    - Create a project.
-   - Run `supabase/migrations/0001_orders.sql` in the SQL editor.
-   - Copy the URL, the anon key and the service-role key into `.env.local`.
-   - Authentication → Email: make sure the sign-in email includes `{{ .Token }}` so it sends the 6-digit code.
+   - Copy the URL and the anon key into `.env.local`.
+   - Connect → ORMs → Prisma: copy the pooled URL (port 6543) to `DATABASE_URL` and the direct URL (port 5432) to `DIRECT_URL`.
+   - Run `pnpm db:migrate` to create the `orders` and `order_items` tables.
+   - Authentication → Email: set the OTP length to 6, and make sure the sign-in email includes `{{ .Token }}` so it sends the code.
    - Authentication → URL configuration: add `http://localhost:3000/auth/callback` and your live `/auth/callback` URL.
    - Optional: Google provider.
 2. **Paystack** (Test mode)
@@ -44,6 +45,8 @@ Paystack test card (no extra checks): `4084 0840 8408 4081`, expiry `09/27`, CVV
 
 `pnpm test` (unit) · `pnpm e2e` (browser, run `pnpm exec playwright install chromium` first) · `pnpm typecheck` · `pnpm lint`
 
+Database: `pnpm db:migrate` (apply migrations) · `pnpm db:migrate:dev` (create a new migration after editing `prisma/schema.prisma`) · `pnpm db:studio` (browse the data)
+
 ## Deploy
 
-Netlify builds Next.js automatically: connect the repo, add the same environment variables, and deploy. For the subdomain, add a CNAME record `owambe` → `<site>.netlify.app` and add the domain in Netlify.
+Netlify builds Next.js automatically: connect the repo, add the same environment variables (except `DIRECT_URL`, which only migrations use), and deploy. Run `pnpm db:migrate` yourself when the schema changes; deploys never touch the database. For the subdomain, add a CNAME record `owambe` → `<site>.netlify.app` and add the domain in Netlify.

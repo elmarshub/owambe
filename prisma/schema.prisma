@@ -1,0 +1,68 @@
+// Orders for owambe. Amounts are whole naira; Paystack amounts (kobo) are converted in src/lib/paystack.ts.
+// The connection URL lives in prisma.config.ts (migrations) and src/lib/db.ts (runtime).
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum OrderStatus {
+  pending
+  paid
+  failed
+}
+
+enum DeliverySpeed {
+  std
+  exp
+}
+
+model Order {
+  id           String        @id @default(uuid()) @db.Uuid
+  /// OW-XXXXXXXXX, also the Paystack reference.
+  ref          String        @unique
+  /// Supabase auth user id. No foreign key: auth.users lives in another schema that Prisma doesn't manage.
+  userId       String?       @map("user_id") @db.Uuid
+  email        String
+  status       OrderStatus   @default(pending)
+  subtotal     Int
+  deliveryFee  Int           @map("delivery_fee")
+  total        Int
+  deliveryName String        @map("delivery_name")
+  phone        String
+  address      String
+  area         String
+  speed        DeliverySpeed
+  /// What Paystack said when it verified the payment.
+  paystack     Json?
+  paidAt       DateTime?     @map("paid_at") @db.Timestamptz(3)
+  createdAt    DateTime      @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt    DateTime      @updatedAt @map("updated_at") @db.Timestamptz(3)
+  items        OrderItem[]
+
+  @@index([userId, createdAt(sort: Desc)])
+  @@map("orders")
+}
+
+model OrderItem {
+  id        String  @id @default(uuid()) @db.Uuid
+  orderId   String  @map("order_id") @db.Uuid
+  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  /// Catalogue id from src/lib/catalog.ts. Name, colour and prices are copied so old orders stay readable.
+  pieceId   String  @map("piece_id")
+  name      String
+  colour    String
+  size      String
+  qty       Int
+  /// The matching fila or gele.
+  addOn     Boolean @default(false) @map("add_on")
+  unitPrice Int     @map("unit_price")
+  total     Int
+
+  @@index([orderId])
+  @@map("order_items")
+}
