@@ -1,5 +1,6 @@
 // POST /api/checkout: re-prices the bag, saves a pending order and starts a Paystack transaction.
 import { NextResponse } from "next/server";
+import { accLabel } from "@/lib/catalog";
 import { PAY_LIVE } from "@/lib/config";
 import { CheckoutInput, orderRef, priceOrder } from "@/lib/orders";
 import { initializeTransaction } from "@/lib/paystack";
@@ -43,7 +44,7 @@ export async function POST(request: Request) {
       email: user.email,
       amountNaira: priced.total,
       reference: ref,
-      metadata: { order_ref: ref, items: priced.lines.map((l) => `${l.name} · ${l.size} × ${l.qty}`).join(", ") },
+      metadata: { order_ref: ref, items: priced.lines.map((l) => `${l.name} · ${l.size}${l.acc ? ` + ${accLabel(l.id, true)}` : ""} × ${l.qty}`).join(", ") },
     });
     return NextResponse.json({ reference: ref, accessCode: tx.access_code, total: priced.total });
   } catch (e) {

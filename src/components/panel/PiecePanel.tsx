@@ -1,7 +1,7 @@
 "use client";
 // The fitting room: name and price, hanger or dummy, front or back, build and height, size, add to bag.
 import { useEffect, useRef, useState } from "react";
-import { SIZES, naira } from "@/lib/catalog";
+import { ACC_PRICE, SIZES, naira } from "@/lib/catalog";
 import { BUILDS, HEIGHTS, REC, fitAdvice, type Build, type Height } from "@/lib/fit";
 import { isBack, kick, useShop } from "@/store/shop";
 import { useBag } from "@/store/bag";
@@ -72,7 +72,7 @@ export function PiecePanel() {
               <Segment label="Height" value={String(s.height)} onChange={(v) => s.setHeight(Number(v) as Height)} options={[["0", "Shorter"], ["1", "Average"], ["2", "Taller"]]} />
               <label className="check">
                 <input type="checkbox" checked={s.acc} onChange={(e) => s.setAcc(e.target.checked)} />
-                <span>{p.acc === "gele" ? "Add a matching gele" : "Add a matching fila"}</span>
+                <span>Add a matching {p.acc} · {naira(ACC_PRICE[p.acc])}</span>
               </label>
               <div className={advice.tone === "ok" ? "fitmsg" : `fitmsg ${advice.tone}`}><i /><span>{advice.text}</span></div>
             </div>
