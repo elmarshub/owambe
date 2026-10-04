@@ -1,14 +1,14 @@
 "use client";
 import { useEffect } from "react";
-import { Header } from "./Header";
-import { Rail } from "./rail/Rail";
-import { UnderRail } from "./rail/UnderRail";
-import { PiecePanel } from "./panel/PiecePanel";
-import { BagDrawer } from "./bag/BagDrawer";
-import { CheckoutSheet } from "./checkout/CheckoutSheet";
-import { Toast } from "./ui/Toast";
+import { Header } from "@/components/store/Header";
+import { Rail } from "@/components/rail/Rail";
+import { UnderRail } from "@/components/rail/UnderRail";
+import { PiecePanel } from "@/components/fitting-room/PiecePanel";
+import { BagDrawer } from "@/components/bag/BagDrawer";
+import { CheckoutSheet } from "@/components/checkout/CheckoutSheet";
+import { Toast } from "@/components/ui/Toast";
 import { AUTH_LIVE, PAY_LIVE } from "@/lib/config";
-import { currentUser, onUserChange } from "@/lib/shop-client";
+import { currentUser, onUserChange } from "@/lib/client/auth";
 import { useBag } from "@/store/bag";
 import { useShop } from "@/store/shop";
 import { useUi } from "@/store/ui";
@@ -21,14 +21,13 @@ export function Store() {
   const { bagOpen, sheetOpen, closeBag, closeSheet } = useUi();
 
   useEffect(() => {
-    // Bring back the saved bag, respect reduced motion, and pick up who's signed in.
     useBag.persist.rehydrate();
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) setMotion(false);
     const ui = useUi.getState();
     currentUser().then((u) => {
       ui.setUser(u);
       const params = new URLSearchParams(window.location.search);
-      if (params.get("checkout") === "1" && u) ui.openSheet(); // back from Google
+      if (params.get("checkout") === "1" && u) ui.openSheet();
       if (params.get("signin") === "failed") ui.showToast("Google sign-in didn't finish. Try again.");
       if (params.has("checkout") || params.has("signin")) window.history.replaceState(null, "", "/");
     });

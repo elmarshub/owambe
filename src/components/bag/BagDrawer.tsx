@@ -1,6 +1,6 @@
 "use client";
 import { useMemo } from "react";
-import { findPiece, naira } from "@/lib/catalog";
+import { MAX_QTY, accLabel, findPiece, naira, unitPrice } from "@/lib/catalog";
 import { garmentSVG } from "@/lib/garments";
 import { bagSubtotal, useBag } from "@/store/bag";
 import { useUi } from "@/store/ui";
@@ -31,14 +31,14 @@ export function BagDrawer() {
                 <div className="thumb" dangerouslySetInnerHTML={{ __html: thumbs[i] }} />
                 <div>
                   <b>{p.name}</b>
-                  <span className="meta">{p.colour} · {b.size}{b.acc ? ` · with ${p.acc}` : ""}</span>
+                  <span className="meta">{p.colour} · {b.size}{b.acc ? ` · ${accLabel(b.id, b.acc)}` : ""}</span>
                   <br />
-                  <span className="lineprice">{naira(p.price * b.qty)}</span>
+                  <span className="lineprice">{naira(unitPrice(p, b.acc) * b.qty)}</span>
                 </div>
                 <div className="qty">
                   <button aria-label="One fewer" onClick={() => change(i, -1)}>−</button>
                   <span>{b.qty}</span>
-                  <button aria-label="One more" onClick={() => change(i, 1)}>+</button>
+                  <button aria-label="One more" disabled={b.qty >= MAX_QTY} onClick={() => change(i, 1)}>+</button>
                 </div>
               </div>
             );
