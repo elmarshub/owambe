@@ -18,7 +18,6 @@ interface NewOrder {
   delivery: CheckoutInput["delivery"];
 }
 
-/** Saves a pending order and its lines in one write. */
 export function createOrder(o: NewOrder) {
   return db().order.create({
     data: {
@@ -54,10 +53,6 @@ export function listOrders(userId: string) {
   return db().order.findMany({ where: { userId }, include: withItems, orderBy: { createdAt: "desc" }, take: 50 });
 }
 
-/**
- * Marks an order paid if Paystack's verified transaction matches it exactly (status, currency, amount).
- * Safe to call twice (from the browser's verify call and from the webhook): it only moves pending → paid.
- */
 export async function settleOrder(order: OrderWithItems, tx: VerifiedTransaction) {
   const matches = tx.status === "success" && tx.currency === "NGN" && tx.amount === order.total * 100;
   if (!matches) return { ok: false as const, reason: tx.status === "success" ? "Amount mismatch" : `Payment ${tx.status}` };
@@ -70,13 +65,11 @@ export async function settleOrder(order: OrderWithItems, tx: VerifiedTransaction
       paystack: { reference: tx.reference, channel: tx.channel, amount: tx.amount, paid_at: tx.paid_at },
     },
   });
-  // Read it back rather than assume: the other caller may have settled it, or it may not have been pending.
   const fresh = await getOrder(order.ref);
   if (fresh?.status !== "paid") return { ok: false as const, reason: `Order is ${fresh?.status ?? "missing"}` };
   return { ok: true as const, order: fresh };
 }
 
-/** The slice of an order that's safe to send back to the shopper's browser. */
 export const publicOrder = (o: OrderWithItems) => ({
   ref: o.ref,
   status: o.status,

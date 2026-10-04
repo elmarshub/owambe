@@ -2,6 +2,7 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef } from "react";
 import { SIZES, naira } from "@/lib/catalog";
 import { dummySVG, garmentSVG } from "@/lib/garments";
+import { STACKED_MAX_WIDTH } from "@/lib/layout";
 import { motionBus, useShop } from "@/store/shop";
 
 interface Sim { x: number; vx: number; a: number; va: number; s: number; vs: number; sw: number; vsw: number; o: number }
@@ -9,7 +10,6 @@ interface Geo { W: number; H: number; railY: number; stageW: number; stageH: num
 interface Target { x: number; a: number; s: number; o: number; z: number }
 interface Drag { x0: number; moved: boolean; i: number | null; f0: number; spin: boolean }
 
-const MOBILE = 760;
 
 export function Rail() {
   const list = useShop((s) => s.list);
@@ -41,14 +41,15 @@ export function Rail() {
     if (!stage) return;
     const { list: l, selected: sel } = useShop.getState();
     const w = stage.clientWidth;
-    const mobile = window.innerWidth <= MOBILE;
+    const mobile = window.innerWidth <= STACKED_MAX_WIDTH;
     const railY = 44;
     const n = l.length || 7;
-    const railW = w * (mobile ? 0.96 : 0.84);
-    const W = mobile ? 148 : Math.min(240, railW / (n * 0.6 + 0.9));
+    const railW = mobile ? w : w * 0.84;
+    const W = mobile ? Math.round(Math.min(210, Math.max(140, w * 0.4))) : Math.min(240, railW / (n * 0.6 + 0.9));
     const H = (W * 310) / 200;
-    const selS = mobile ? 1.22 : 1.45;
-    const stageH = Math.round(railY + H * (sel !== null ? selS : mobile ? 1.2 : 1.3) + (mobile ? 40 : 36));
+    const selS = mobile ? 1.5 : 1.45;
+    const grown = sel !== null ? selS : mobile ? 1.18 : 1.3;
+    const stageH = Math.round(railY + H * grown + (mobile ? 16 : 28));
     stage.style.setProperty("--stageH", stageH + "px");
     stage.style.setProperty("--railY", railY + "px");
     stage.style.setProperty("--postH", Math.round(Math.min(90, stageH * 0.16)) + "px");

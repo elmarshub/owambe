@@ -17,7 +17,7 @@ export function UnderRail() {
 
   return (
     <>
-      <div className="under">
+      <div className="under" data-open={selected !== null || undefined}>
         <div className="count">Piece <b>{(e ?? Math.floor((n - 1) / 2)) + 1}</b> of {n}</div>
         <div className="caption" aria-live="polite"><strong>{title}</strong><span>{sub}</span></div>
         <div className="arrows">
