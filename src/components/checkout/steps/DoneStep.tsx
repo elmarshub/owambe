@@ -1,5 +1,6 @@
 "use client";
 import { useEffect } from "react";
+import Link from "next/link";
 import { accLabel, naira } from "@/lib/catalog";
 import type { PaidOrder } from "@/lib/client/payment";
 import { useBag } from "@/store/bag";
@@ -25,13 +26,13 @@ export function DoneStep({ order }: { order: PaidOrder }) {
             : <>Your pieces are being pressed and packed. We&apos;ll text you when they leave.</>}
         </p>
         <div className="totals tagtotals">
-          {order.items.map((l, i) => <div className="row" key={i}><span>{l.name} · {l.size}{l.acc ? ` · ${accLabel(l.id, l.acc)}` : ""}{l.qty > 1 ? ` × ${l.qty}` : ""}</span><span>{naira(l.total)}</span></div>)}
+          {order.items.map((l) => <div className="row" key={`${l.id}-${l.size}-${l.acc}`}><span>{l.name} · {l.size}{l.acc ? ` · ${accLabel(l.id, l.acc)}` : ""}{l.qty > 1 ? ` × ${l.qty}` : ""}</span><span>{naira(l.total)}</span></div>)}
           <div className="row"><span>Delivery</span><span>{naira(order.delivery)}</span></div>
           <div className="row big"><span>Paid</span><span>{naira(order.total)}</span></div>
         </div>
       </div>
       <button className="primary" type="button" onClick={() => { closeSheet(); deselect(); }}>Back to the rail</button>
-      {!order.demo && <a className="secondary" href="/orders">View my orders</a>}
+      {!order.demo && <Link className="secondary" href="/orders" onClick={closeSheet}>View my orders</Link>}
     </div>
   );
 }

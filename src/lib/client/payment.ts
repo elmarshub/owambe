@@ -35,15 +35,19 @@ export async function pay(items: BagItem[], delivery: DeliveryDetails): Promise<
     return { ref: "OW-DEMO" + String(Math.floor(1000 + Math.random() * 9000)), ...summarise(items, delivery.speed), demo: true };
   }
 
+  const paystackScript = import("@paystack/inline-js");
   const res = await fetch("/api/checkout", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ items: items.map(({ id, size, qty, acc }) => ({ id, size, qty, acc })), delivery }),
   });
-  const start = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error(start.error ?? "Couldn't start the payment.");
+  if (!res.ok) {
+    const failure = await res.json().catch(() => ({}));
+    throw new Error(failure.error ?? "Couldn't start the payment.");
+  }
+  const start: { reference: string; accessCode: string } = await res.json();
 
-  const { default: PaystackPop } = await import("@paystack/inline-js");
+  const { default: PaystackPop } = await paystackScript;
   await new Promise<void>((resolve, reject) => {
     new PaystackPop().resumeTransaction(start.accessCode, {
       onSuccess: () => resolve(),
