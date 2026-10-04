@@ -1,6 +1,3 @@
-// The Drop 01 catalogue. Prices are in naira; Paystack amounts are converted to kobo on the server.
-// The server always re-prices from this file, so the client can never set its own price.
-
 export type Line = "men" | "women";
 export type GarmentType = "agbada" | "kaftan" | "buba" | "iro";
 export type FabricKind = "asooke" | "brocade" | "plain" | "adire" | "lace" | "ankara";
@@ -66,12 +63,10 @@ export type Speed = keyof typeof DELIVERY;
 
 export const AREAS = ["Lekki", "Ikoyi", "Victoria Island", "Ikeja", "Yaba", "Surulere", "Ajah"] as const;
 
-/** The matching fila or gele, added in the fitting room. Priced per piece, like the garment. */
 export const ACC_PRICE: Record<Piece["acc"], number> = { fila: 8000, gele: 12000 };
 
 export const findPiece = (id: string) => PIECES.find((p) => p.id === id);
 export const unitPrice = (p: Piece, acc: boolean) => p.price + (acc ? ACC_PRICE[p.acc] : 0);
-/** "with fila", "with gele", or "" when there's no add-on. */
 export const accLabel = (id: string, acc: boolean) => (acc ? `with ${findPiece(id)?.acc ?? "add-on"}` : "");
 
 export interface BagLine {
@@ -81,7 +76,6 @@ export interface BagLine {
   acc: boolean;
 }
 
-/** Keeps only bag lines that still match the catalogue, so a bag saved before a drop changed can't break the page. */
 export function cleanBag(raw: unknown): BagLine[] {
   if (!Array.isArray(raw)) return [];
   return raw.flatMap((x) => {

@@ -1,6 +1,5 @@
 "use client";
-// Sign-in and payment from the browser. Each function has a live path (Supabase / Paystack)
-// and a demo path that behaves like the prototype, chosen by which keys are set.
+
 import { AUTH_LIVE, PAY_LIVE } from "./config";
 import { DELIVERY, findPiece, unitPrice, type Speed } from "./catalog";
 import type { BagItem } from "@/store/bag";
@@ -25,7 +24,6 @@ export function onUserChange(cb: (u: ShopUser | null) => void) {
   return () => data.subscription.unsubscribe();
 }
 
-/** Emails a 6-digit code. New emails get an account on first sign-in. */
 export async function sendCode(email: string): Promise<void> {
   if (!AUTH_LIVE) return wait(900);
   const { error } = await supabaseBrowser().auth.signInWithOtp({ email, options: { shouldCreateUser: true } });
@@ -43,7 +41,6 @@ export async function verifyCode(email: string, token: string): Promise<ShopUser
   return { email: data.user.email };
 }
 
-/** Live: redirects to Google and back to /?checkout=1. Demo: pretends. */
 export async function signInWithGoogle(): Promise<ShopUser | null> {
   if (!AUTH_LIVE) {
     await wait(1000);
@@ -52,7 +49,7 @@ export async function signInWithGoogle(): Promise<ShopUser | null> {
   const redirectTo = `${window.location.origin}/auth/callback?next=${encodeURIComponent("/?checkout=1")}`;
   const { error } = await supabaseBrowser().auth.signInWithOAuth({ provider: "google", options: { redirectTo } });
   if (error) throw new Error(error.message);
-  return null; // the browser is leaving for Google
+  return null; 
 }
 
 export async function signOut() {
@@ -67,13 +64,11 @@ export interface PaidOrder {
   delivery: number;
   total: number;
   demo: boolean;
-  /** Paystack took the payment but our server couldn't confirm it yet; the webhook will mark it paid. */
   confirming?: boolean;
 }
 
 export class PaymentCancelled extends Error {}
 
-/** The bag priced in the browser, for display only. The server re-prices anything that gets charged. */
 function summarise(items: BagItem[], speed: Speed) {
   const lines = items.flatMap((b) => {
     const p = findPiece(b.id);
@@ -84,12 +79,7 @@ function summarise(items: BagItem[], speed: Speed) {
   return { items: lines, subtotal, delivery, total: subtotal + delivery };
 }
 
-/**
- * Live: the server saves the order and starts the transaction, Paystack's popup takes the card,
- * then the server verifies with Paystack before we show "It's yours".
- * Once the popup reports success, only a clear "not paid" from Paystack counts as a failure, so a
- * shopper whose payment went through is never told to pay again.
- */
+
 export async function pay(items: BagItem[], delivery: DeliveryDetails): Promise<PaidOrder> {
   if (!PAY_LIVE) {
     await wait(1300);

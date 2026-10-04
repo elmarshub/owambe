@@ -1,5 +1,4 @@
 "use client";
-// The bag lives in localStorage, so it survives a refresh and the Google sign-in redirect.
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { MAX_QTY, cleanBag, findPiece, unitPrice, type BagLine } from "@/lib/catalog";
