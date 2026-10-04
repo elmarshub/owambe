@@ -6,34 +6,30 @@ import { GarmentThumb } from "@/components/orders/GarmentThumb";
 import { StatusPill } from "@/components/orders/StatusPill";
 
 export function OrderModal({ order, onClose }: { order: OrderView; onClose: () => void }) {
-  const closeRef = useRef<HTMLButtonElement>(null);
+  const dialogRef = useRef<HTMLDialogElement>(null);
 
   useEffect(() => {
-    const opener = document.activeElement as HTMLElement | null;
-    closeRef.current?.focus();
-    const onKey = (ev: KeyboardEvent) => { if (ev.key === "Escape") onClose(); };
-    document.addEventListener("keydown", onKey);
-    const overflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.removeEventListener("keydown", onKey);
-      document.body.style.overflow = overflow;
-      opener?.focus();
-    };
-  }, [onClose]);
+    const dialog = dialogRef.current;
+    dialog?.showModal();
+    return () => dialog?.close();
+  }, []);
 
   const speed = DELIVERY[order.delivery.speed];
 
   return (
-    <>
-      <div className="scrim show" onClick={onClose} />
-      <section className="sheet show order-modal" role="dialog" aria-modal="true" aria-labelledby="order-modal-title">
+    <dialog
+      ref={dialogRef}
+      className="sheet show order-modal"
+      aria-labelledby="order-modal-title"
+      closedby="any"
+      onClose={onClose}
+    >
         <div className="order-modal__head">
           <div className="order-modal__title">
             <span className="order-modal__label"><span className="small">Order</span><StatusPill status={order.status} /></span>
             <h2 id="order-modal-title">{order.ref}</h2>
           </div>
-          <button ref={closeRef} type="button" className="x" aria-label="Close" onClick={onClose}>✕</button>
+          <button type="button" className="x" aria-label="Close" autoFocus onClick={onClose}>✕</button>
         </div>
         <p className="small">
           Placed {order.placedAt}
@@ -72,7 +68,6 @@ export function OrderModal({ order, onClose }: { order: OrderView; onClose: () =
         </div>
 
         <button type="button" className="secondary" onClick={onClose}>Back to my orders</button>
-      </section>
-    </>
+    </dialog>
   );
 }

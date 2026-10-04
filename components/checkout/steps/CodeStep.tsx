@@ -5,6 +5,7 @@ import { sendCode, verifyCode } from "@/lib/client/auth";
 import { useUi } from "@/store/ui";
 import { Busy } from "@/components/ui/Busy";
 
+const SLOTS = ["d1", "d2", "d3", "d4", "d5", "d6"] as const;
 const RESEND_SECONDS = AUTH_LIVE ? 60 : 30;
 
 export function CodeStep({ email, onVerified, onChangeEmail }: { email: string; onVerified: () => void; onChangeEmail: () => void }) {
@@ -20,7 +21,7 @@ export function CodeStep({ email, onVerified, onChangeEmail }: { email: string; 
 
   useEffect(() => {
     if (left <= 0) return;
-    const t = setTimeout(() => setLeft(left - 1), 1000);
+    const t = setTimeout(() => setLeft((l) => l - 1), 1000);
     return () => clearTimeout(t);
   }, [left]);
 
@@ -71,7 +72,7 @@ export function CodeStep({ email, onVerified, onChangeEmail }: { email: string; 
       <p className="small">We sent a 6-digit code to <b className="ink">{email}</b>. It works for 10 minutes.</p>
       <div className={`otp${err ? " bad" : ""}${shake ? " shake" : ""}`} role="group" aria-label="6-digit code">
         {digits.map((d, i) => (
-          <input key={i} ref={(el) => { refs.current[i] = el; }} inputMode="numeric" autoComplete={i === 0 ? "one-time-code" : "off"} aria-label={`Digit ${i + 1}`}
+          <input key={SLOTS[i]} ref={(el) => { refs.current[i] = el; }} inputMode="numeric" autoComplete={i === 0 ? "one-time-code" : "off"} aria-label={`Digit ${i + 1}`}
             value={d} onChange={(e) => put(i, e.target.value)} onKeyDown={(e) => key(i, e)} />
         ))}
       </div>

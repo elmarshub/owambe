@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { HomeLogo } from "@/components/ui/HomeLogo";
 import { EmptyHanger } from "@/components/ui/EmptyHanger";
 
 export const metadata: Metadata = { title: "Not on the rail", robots: { index: false } };
@@ -8,7 +9,7 @@ export default function NotFound() {
   return (
     <div className="wrap">
       <header className="top">
-        <Link className="mark" href="/" aria-label="Owambe">owambe<i>.</i></Link>
+        <HomeLogo />
       </header>
       <main className="notfound">
         <EmptyHanger />

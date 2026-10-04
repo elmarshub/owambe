@@ -69,7 +69,7 @@ export function Store({ initialPiece }: { initialPiece?: string }) {
 
   return (
     <>
-      <div className="wrap">
+      <div className="wrap" inert={bagOpen || sheetOpen}>
         <Header />
         <main className="shop">
           <div className="titlebar">
@@ -88,7 +88,7 @@ export function Store({ initialPiece }: { initialPiece?: string }) {
           <button className="textbtn" aria-pressed={motion} onClick={() => setMotion(!motion)}>Motion: {motion ? "on" : "off"}</button>
         </footer>
       </div>
-      <div className={bagOpen || sheetOpen ? "scrim show" : "scrim"} onClick={() => { closeBag(); closeSheet(); }} />
+      <button type="button" tabIndex={-1} aria-label="Close" className={bagOpen || sheetOpen ? "scrim show" : "scrim"} onClick={() => { closeBag(); closeSheet(); }} />
       <BagDrawer />
       <CheckoutSheet />
       <Toast />
