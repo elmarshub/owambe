@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
+import { STACKED_MAX_WIDTH } from "@/lib/layout";
 import { ACC_PRICE, SIZES, naira } from "@/lib/catalog";
 import { BUILDS, HEIGHTS, REC, fitAdvice, type Build, type Height } from "@/lib/fit";
 import { isBack, kick, useShop } from "@/store/shop";
@@ -19,7 +20,7 @@ export function PiecePanel() {
     const scene = panel?.parentElement;
     if (!panel || !scene) return;
     const fit = () => {
-      const desktop = window.innerWidth > 760;
+      const desktop = window.innerWidth > STACKED_MAX_WIDTH;
       scene.style.minHeight = desktop && panel.classList.contains("show") ? `${panel.offsetTop + panel.offsetHeight + 12}px` : "";
     };
     const ro = new ResizeObserver(fit);

@@ -5,6 +5,7 @@ import { useShop } from "@/store/shop";
 import { bagCount, useBag } from "@/store/bag";
 import { useUi } from "@/store/ui";
 import { useHydrated } from "@/hooks/useHydrated";
+import { AUTH_LIVE } from "@/lib/config";
 
 const counts = { men: PIECES.filter((p) => p.line === "men").length, women: PIECES.filter((p) => p.line === "women").length };
 
@@ -13,6 +14,7 @@ export function Header() {
   const setLine = useShop((s) => s.setLine);
   const items = useBag((b) => b.items);
   const openBag = useUi((u) => u.openBag);
+  const user = useUi((u) => u.user);
   const hydrated = useHydrated();
 
   return (
@@ -26,6 +28,7 @@ export function Header() {
         ))}
       </nav>
       <div className="tools">
+        {AUTH_LIVE && user && <Link className="ghost" href="/orders">My orders</Link>}
         <button className="bag" aria-label="Open bag" onClick={openBag}>
           Bag <span className="bagcount">{hydrated ? bagCount(items) : 0}</span>
         </button>

@@ -37,6 +37,7 @@ export default async function OrdersPage() {
         <div className="tools">{email && <SignOutButton />}</div>
       </header>
       <main className="orders">
+        <Link className="back" href="/">‹&nbsp; Return to the rail</Link>
         <h1>My orders</h1>
         {!AUTH_LIVE && <p className="small">Sign-in isn&apos;t switched on yet, so there are no saved orders. Demo orders aren&apos;t stored.</p>}
         {AUTH_LIVE && !email && <p className="small">Sign in at checkout to see your orders here. <Link className="link" href="/">Back to the rail</Link></p>}

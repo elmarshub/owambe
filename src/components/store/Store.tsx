@@ -50,7 +50,7 @@ export function Store() {
     <>
       <div className="wrap">
         <Header />
-        <main>
+        <main className="shop">
           <div className="titlebar">
             <h1>Ready for the <em>party.</em></h1>
             <div className="drop"><b>Drop 01</b> · sewn in Lagos. Every piece hangs with its price tag on.</div>
