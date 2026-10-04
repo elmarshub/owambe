@@ -8,19 +8,19 @@ import { SITE_URL } from "@/lib/site";
 
 export const pieceImageSize = { width: 1200, height: 630 };
 
-const font = (pkg: string, file: string) => readFile(join(process.cwd(), "node_modules/@fontsource", pkg, "files", file));
+const asset = (file: string) => readFile(join(process.cwd(), "src/assets/og", file));
 
 export async function pieceImage(id: string) {
   const p = findPiece(id);
   if (!p) return new Response("Not found", { status: 404 });
 
   const [display, displayExt, displayHeavy, body, bodyBold, noise] = await Promise.all([
-    font("bricolage-grotesque", "bricolage-grotesque-latin-700-normal.woff"),
-    font("bricolage-grotesque", "bricolage-grotesque-latin-ext-700-normal.woff"),
-    font("bricolage-grotesque", "bricolage-grotesque-latin-800-normal.woff"),
-    font("manrope", "manrope-latin-500-normal.woff"),
-    font("manrope", "manrope-latin-700-normal.woff"),
-    readFile(join(process.cwd(), "public/noise.png")),
+    asset("bricolage-grotesque-latin-700-normal.woff"),
+    asset("bricolage-grotesque-latin-ext-700-normal.woff"),
+    asset("bricolage-grotesque-latin-800-normal.woff"),
+    asset("manrope-latin-500-normal.woff"),
+    asset("manrope-latin-700-normal.woff"),
+    asset("noise.png"),
   ]);
 
   const n = linePieces(p.line).findIndex((x) => x.id === p.id) + 1;
