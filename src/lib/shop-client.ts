@@ -124,5 +124,10 @@ export async function pay(items: BagItem[], delivery: DeliveryDetails): Promise<
     return { ref: o.ref, items: o.items, subtotal: o.subtotal, delivery: o.delivery, total: o.total, demo: false };
   }
   if (v?.status === 402) throw new Error(done.error ?? "Paystack didn't confirm the payment.");
+  if (v && v.status >= 400 && v.status < 500) {
+    throw new Error(
+      `${done.error ?? "We couldn't check the payment."} Order ${start.reference}: your payment may have gone through, so please don't pay again until it shows in My orders.`,
+    );
+  }
   return { ref: start.reference, ...summarise(items, delivery.speed), demo: false, confirming: true };
 }
