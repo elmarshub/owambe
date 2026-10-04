@@ -49,4 +49,12 @@ Database: `pnpm db:migrate` (apply migrations) · `pnpm db:migrate:dev` (create 
 
 ## Deploy
 
-Netlify builds Next.js automatically: connect the repo, add the same environment variables (except `DIRECT_URL`, which only migrations use), and deploy. Run `pnpm db:migrate` yourself when the schema changes; deploys never touch the database. For the subdomain, add a CNAME record `owambe` → `<site>.netlify.app` and add the domain in Netlify.
+Hosted on Netlify, which builds Next.js automatically from `main`.
+
+1. Netlify → Add new project → import this repo. Netlify picks up `netlify.toml` and pnpm.
+2. Environment variables: the same as `.env.local`, except `DIRECT_URL` (only migrations use it). Set `NEXT_PUBLIC_SITE_URL=https://owambe.martinelmars.com`.
+3. Domain management → add `owambe.martinelmars.com`. The DNS for martinelmars.com is on Cloudflare: add a CNAME `owambe` → `<site>.netlify.app` with the proxy off (grey cloud), so Netlify can issue the HTTPS certificate.
+4. Supabase → Authentication → URL configuration: Site URL `https://owambe.martinelmars.com`, and add `https://owambe.martinelmars.com/auth/callback` to the redirect URLs.
+5. Paystack → Settings → API Keys & Webhooks: webhook URL `https://owambe.martinelmars.com/api/paystack/webhook`.
+
+Run `pnpm db:migrate` yourself when the schema changes; deploys never touch the database.

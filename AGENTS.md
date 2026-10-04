@@ -34,6 +34,7 @@ It sells finished, sewn pieces (agbada, kaftan, buba and sokoto, iro and buba), 
 | Data | Postgres on Supabase through Prisma 7 (`@prisma/adapter-pg`): `orders` and `order_items` |
 | Payments | Paystack: server initialises → inline popup → server verifies → signed webhook as backup |
 | Tests | Vitest (`tests/unit`), Playwright (`tests/e2e`, demo mode on port 3100) |
+| Hosting | Netlify (Next.js Runtime; `proxy.ts` runs as an edge function), `main` deploys to production. DNS for martinelmars.com is on Cloudflare |
 
 ## Layout
 
