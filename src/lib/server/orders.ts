@@ -49,9 +49,42 @@ export function getOrder(ref: string) {
   return db().order.findUnique({ where: { ref }, include: withItems });
 }
 
-export function listOrders(userId: string) {
-  return db().order.findMany({ where: { userId }, include: withItems, orderBy: { createdAt: "desc" }, take: 50 });
+export const ORDERS_PER_PAGE = 4;
+
+export async function listOrders(userId: string, page: number) {
+  const where = { userId };
+  const [total, orders] = await Promise.all([
+    db().order.count({ where }),
+    db().order.findMany({ where, include: withItems, orderBy: { createdAt: "desc" }, skip: (page - 1) * ORDERS_PER_PAGE, take: ORDERS_PER_PAGE }),
+  ]);
+  return { total, pages: Math.max(1, Math.ceil(total / ORDERS_PER_PAGE)), orders };
 }
+
+const lagosTime = (d: Date) => d.toLocaleString("en-NG", { dateStyle: "medium", timeStyle: "short", timeZone: "Africa/Lagos" });
+
+export interface OrderView {
+  ref: string;
+  status: OrderWithItems["status"];
+  placedAt: string;
+  paidAt: string | null;
+  subtotal: number;
+  deliveryFee: number;
+  total: number;
+  delivery: { name: string; phone: string; address: string; area: string; speed: OrderWithItems["speed"] };
+  items: { id: string; pieceId: string; name: string; colour: string; size: string; qty: number; addOn: boolean; unitPrice: number; total: number }[];
+}
+
+export const toOrderView = (o: OrderWithItems): OrderView => ({
+  ref: o.ref,
+  status: o.status,
+  placedAt: lagosTime(o.createdAt),
+  paidAt: o.paidAt ? lagosTime(o.paidAt) : null,
+  subtotal: o.subtotal,
+  deliveryFee: o.deliveryFee,
+  total: o.total,
+  delivery: { name: o.deliveryName, phone: o.phone, address: o.address, area: o.area, speed: o.speed },
+  items: o.items.map((l) => ({ id: l.id, pieceId: l.pieceId, name: l.name, colour: l.colour, size: l.size, qty: l.qty, addOn: l.addOn, unitPrice: l.unitPrice, total: l.total })),
+});
 
 export async function settleOrder(order: OrderWithItems, tx: VerifiedTransaction) {
   const matches = tx.status === "success" && tx.currency === "NGN" && tx.amount === order.total * 100;
