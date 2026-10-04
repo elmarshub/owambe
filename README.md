@@ -17,9 +17,9 @@ Next.js 16 · React 19 · TypeScript · Zustand · Supabase (Auth + Postgres) ·
 ## Run it
 
 ```bash
-npm install
+pnpm install
 cp .env.example .env.local   # leave it empty for demo mode
-npm run dev                  # http://localhost:3000
+pnpm dev                     # http://localhost:3000
 ```
 
 With no keys, the store runs in **demo mode**: any 6-digit code signs you in (except `000000`) and payment is simulated.
@@ -36,13 +36,13 @@ With no keys, the store runs in **demo mode**: any 6-digit code signs you in (ex
 2. **Paystack** (Test mode)
    - Copy `pk_test_…` and `sk_test_…` into `.env.local`.
    - After deploying, set the webhook URL to `https://<your-site>/api/paystack/webhook`.
-3. Restart `npm run dev`.
+3. Restart `pnpm dev`.
 
 Paystack test card (no extra checks): `4084 0840 8408 4081`, expiry `09/27`, CVV `408`. More test cards: [Paystack test payments](https://paystack.com/docs/payments/test-payments/).
 
 ## Scripts
 
-`npm test` (unit) · `npm run e2e` (browser, run `npx playwright install chromium` first) · `npm run typecheck` · `npm run lint`
+`pnpm test` (unit) · `pnpm e2e` (browser, run `pnpm exec playwright install chromium` first) · `pnpm typecheck` · `pnpm lint`
 
 ## Deploy
 
