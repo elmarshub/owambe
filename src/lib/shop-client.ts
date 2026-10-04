@@ -67,6 +67,8 @@ export interface PaidOrder {
   delivery: number;
   total: number;
   demo: boolean;
+  /** Paystack took the payment but our server couldn't confirm it yet; the webhook will mark it paid. */
+  confirming?: boolean;
 }
 
 export class PaymentCancelled extends Error {}
@@ -85,6 +87,8 @@ function summarise(items: BagItem[], speed: Speed) {
 /**
  * Live: the server saves the order and starts the transaction, Paystack's popup takes the card,
  * then the server verifies with Paystack before we show "It's yours".
+ * Once the popup reports success, only a clear "not paid" from Paystack counts as a failure, so a
+ * shopper whose payment went through is never told to pay again.
  */
 export async function pay(items: BagItem[], delivery: DeliveryDetails): Promise<PaidOrder> {
   if (!PAY_LIVE) {
@@ -97,7 +101,7 @@ export async function pay(items: BagItem[], delivery: DeliveryDetails): Promise<
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ items: items.map(({ id, size, qty, acc }) => ({ id, size, qty, acc })), delivery }),
   });
-  const start = await res.json();
+  const start = await res.json().catch(() => ({}));
   if (!res.ok) throw new Error(start.error ?? "Couldn't start the payment.");
 
   const { default: PaystackPop } = await import("@paystack/inline-js");
@@ -113,9 +117,12 @@ export async function pay(items: BagItem[], delivery: DeliveryDetails): Promise<
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ reference: start.reference }),
-  });
-  const done = await v.json();
-  if (!v.ok) throw new Error(done.error ?? "Couldn't confirm the payment.");
-  const o = done.order;
-  return { ref: o.ref, items: o.items, subtotal: o.subtotal, delivery: o.delivery, total: o.total, demo: false };
+  }).catch(() => null);
+  const done = v ? await v.json().catch(() => ({})) : {};
+  if (v?.ok) {
+    const o = done.order;
+    return { ref: o.ref, items: o.items, subtotal: o.subtotal, delivery: o.delivery, total: o.total, demo: false };
+  }
+  if (v?.status === 402) throw new Error(done.error ?? "Paystack didn't confirm the payment.");
+  return { ref: start.reference, ...summarise(items, delivery.speed), demo: false, confirming: true };
 }

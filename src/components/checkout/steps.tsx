@@ -241,8 +241,12 @@ export function DoneStep({ order }: { order: PaidOrder }) {
       <div className="tag">
         <div className="hole" />
         <div className="no">ORDER {order.ref}</div>
-        <h5 id="sheet-title">It&apos;s yours.</h5>
-        <p className="small">Your pieces are being pressed and packed. We&apos;ll text you when they leave.</p>
+        <h5 id="sheet-title">{order.confirming ? "Payment received." : <>It&apos;s yours.</>}</h5>
+        <p className="small">
+          {order.confirming
+            ? "We're confirming it with Paystack. It will show as paid in My orders in a moment."
+            : <>Your pieces are being pressed and packed. We&apos;ll text you when they leave.</>}
+        </p>
         <div className="totals tagtotals">
           {order.items.map((l, i) => <div className="row" key={i}><span>{l.name} · {l.size}{l.acc ? ` · ${accLabel(l.id, l.acc)}` : ""}{l.qty > 1 ? ` × ${l.qty}` : ""}</span><span>{naira(l.total)}</span></div>)}
           <div className="row"><span>Delivery</span><span>{naira(order.delivery)}</span></div>
