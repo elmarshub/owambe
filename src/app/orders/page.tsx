@@ -3,9 +3,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { AUTH_LIVE } from "@/lib/config";
 import { accLabel, naira } from "@/lib/catalog";
-import { supabaseServer } from "@/lib/supabase/server";
-import { listOrders, type OrderWithItems } from "@/lib/orders-server";
-import { SignOutButton } from "./SignOutButton";
+import { supabaseServer } from "@/lib/server/supabase";
+import { listOrders, type OrderWithItems } from "@/lib/server/orders";
+import { SignOutButton } from "@/components/orders/SignOutButton";
 
 export const metadata: Metadata = { title: "My orders · owambe." };
 export const dynamic = "force-dynamic";

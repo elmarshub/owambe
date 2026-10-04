@@ -1,6 +1,4 @@
 "use client";
-// React renders the pieces once; a requestAnimationFrame loop moves them with springs.
-// A turn is 2D: width follows cos(angle) and the face swaps edge-on, so "Back" shows the real back.
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef } from "react";
 import { SIZES, naira } from "@/lib/catalog";
 import { dummySVG, garmentSVG } from "@/lib/garments";
@@ -63,7 +61,6 @@ export function Rail() {
     });
   }, []);
 
-  // A new rail (Men/Women): the pieces slide in from the left.
   useLayoutEffect(() => {
     const enter = -window.innerWidth * 0.7;
     sim.current = list.map((_, i) => ({ x: enter - (list.length - i) * 40, vx: 0, a: -40, va: 0, s: 1, vs: 0, sw: 0, vsw: 0, o: 0 }));
@@ -147,7 +144,6 @@ export function Rail() {
           const ka = grab ? 900 : 120, ca = grab ? 60 : 15;
           q.va += (ka * (t.a - q.a) - ca * q.va) * dt; q.a += q.va * dt;
           q.vs += (220 * (t.s - q.s) - 26 * q.vs) * dt; q.s += q.vs * dt;
-          // The pendulum: sideways acceleration makes the piece swing on its hook.
           q.vsw += (-55 * q.sw - 3.2 * q.vsw - ax * 0.012) * dt; q.sw += q.vsw * dt;
           q.sw = Math.max(-9, Math.min(9, q.sw));
           q.o += (t.o - q.o) * Math.min(1, dt * 9);
@@ -171,11 +167,10 @@ export function Rail() {
       raf = requestAnimationFrame(frame);
     };
     raf = requestAnimationFrame((t) => { last = t; frame(t); });
-    stageRef.current?.setAttribute("data-ready", ""); // lets tests know the rail is live
+    stageRef.current?.setAttribute("data-ready", "");
     return () => cancelAnimationFrame(raf);
   }, []);
 
-  // Pointer: hover on desktop, drag to browse, drag the open piece to spin it, tap to open.
   const hitIndex = (target: EventTarget | null) => {
     const hit = (target as HTMLElement | null)?.closest?.(".hit") as HTMLElement | null;
     return hit ? Number(hit.dataset.i) : null;

@@ -1,7 +1,6 @@
 import { z } from "zod";
-import { AREAS, DELIVERY, MAX_QTY, SIZES, findPiece, unitPrice } from "./catalog";
+import { AREAS, DELIVERY, MAX_QTY, SIZES, findPiece, unitPrice } from "@/lib/catalog";
 
-/** What the browser sends when you press Pay. Prices are NOT accepted from the browser. */
 export const CheckoutInput = z.object({
   items: z.array(z.object({
     id: z.string(),
@@ -30,7 +29,6 @@ export interface PricedLine {
   total: number;
 }
 
-/** Re-prices the bag from the catalogue. Throws if a piece doesn't exist. Amounts in naira. */
 export function priceOrder(input: CheckoutInput) {
   const lines: PricedLine[] = input.items.map((it) => {
     const p = findPiece(it.id);
@@ -43,7 +41,6 @@ export function priceOrder(input: CheckoutInput) {
   return { lines, subtotal, delivery, total: subtotal + delivery };
 }
 
-/** A short, readable, unique order reference, also used as the Paystack reference. */
 export function orderRef() {
   const t = Date.now().toString(36).toUpperCase().slice(-5);
   const r = Math.random().toString(36).toUpperCase().slice(2, 6);

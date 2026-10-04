@@ -14,7 +14,6 @@ export function PiecePanel() {
   const [err, setErr] = useState("");
   const ref = useRef<HTMLElement>(null);
 
-  // The desktop panel is absolutely positioned, so grow the scene to stop it covering the arrows below.
   useEffect(() => {
     const panel = ref.current;
     const scene = panel?.parentElement;

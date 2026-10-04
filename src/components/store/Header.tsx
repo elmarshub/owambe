@@ -4,7 +4,7 @@ import { PIECES } from "@/lib/catalog";
 import { useShop } from "@/store/shop";
 import { bagCount, useBag } from "@/store/bag";
 import { useUi } from "@/store/ui";
-import { useHydrated } from "@/lib/useHydrated";
+import { useHydrated } from "@/hooks/useHydrated";
 
 const counts = { men: PIECES.filter((p) => p.line === "men").length, women: PIECES.filter((p) => p.line === "women").length };
 

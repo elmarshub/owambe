@@ -1,11 +1,15 @@
 "use client";
 import { useEffect, useState } from "react";
 import { AUTH_LIVE } from "@/lib/config";
-import type { DeliveryDetails, PaidOrder } from "@/lib/shop-client";
+import type { DeliveryDetails, PaidOrder } from "@/lib/client/payment";
 import { useUi } from "@/store/ui";
-import { CodeStep, DetailsStep, DoneStep, EmailStep, PayStep } from "./steps";
+import { CodeStep } from "@/components/checkout/steps/CodeStep";
+import { DetailsStep } from "@/components/checkout/steps/DetailsStep";
+import { DoneStep } from "@/components/checkout/steps/DoneStep";
+import { EmailStep } from "@/components/checkout/steps/EmailStep";
+import { PayStep } from "@/components/checkout/steps/PayStep";
 
-export type Step = "email" | "code" | "details" | "pay" | "done";
+type Step = "email" | "code" | "details" | "pay" | "done";
 const PROGRESS: Record<Step, number> = { email: 1, code: 1, details: 2, pay: 3, done: 3 };
 const BACK: Partial<Record<Step, Step>> = { code: "email", details: "code", pay: "details" };
 
@@ -16,7 +20,6 @@ export function CheckoutSheet() {
   const [details, setDetails] = useState<DeliveryDetails>({ name: "", phone: "", address: "", area: "Lekki", speed: "std" });
   const [order, setOrder] = useState<PaidOrder | null>(null);
 
-  // Reset the step whenever the sheet opens; adjusting state during render avoids an extra effect pass.
   const [wasOpen, setWasOpen] = useState(false);
   if (sheetOpen !== wasOpen) {
     setWasOpen(sheetOpen);

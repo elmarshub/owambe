@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { publicOrder, type OrderWithItems } from "@/lib/orders-server";
+import { publicOrder, type OrderWithItems } from "@/lib/server/orders";
 
 const order: OrderWithItems = {
   id: "0b4f2c1e-0000-4000-8000-000000000001", ref: "OW-TEST12345", userId: "u1", email: "ada@example.com", status: "paid",

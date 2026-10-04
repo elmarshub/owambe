@@ -4,7 +4,7 @@ import { create } from "zustand";
 import { linePieces, type Line, type Piece, type Size } from "@/lib/catalog";
 import type { Build, Height } from "@/lib/fit";
 
-export type View = "hanger" | "dummy";
+type View = "hanger" | "dummy";
 
 interface ShopState {
   line: Line;

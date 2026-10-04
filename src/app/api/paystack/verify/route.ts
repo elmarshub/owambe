@@ -3,9 +3,9 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { PAY_LIVE } from "@/lib/config";
-import { getOrder, publicOrder, settleOrder } from "@/lib/orders-server";
-import { verifyTransaction } from "@/lib/paystack";
-import { supabaseServer } from "@/lib/supabase/server";
+import { getOrder, publicOrder, settleOrder } from "@/lib/server/orders";
+import { verifyTransaction } from "@/lib/server/paystack";
+import { supabaseServer } from "@/lib/server/supabase";
 
 const Body = z.object({ reference: z.string().regex(/^OW-[A-Z0-9]+$/) });
 

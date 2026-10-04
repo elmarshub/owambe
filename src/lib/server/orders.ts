@@ -1,7 +1,7 @@
 import "server-only";
-import { db } from "@/lib/db";
+import { db } from "@/lib/server/db";
 import type { CheckoutInput, PricedLine } from "@/lib/orders";
-import type { VerifiedTransaction } from "@/lib/paystack";
+import type { VerifiedTransaction } from "@/lib/server/paystack";
 import type { Prisma } from "@/generated/prisma/client";
 
 const withItems = { items: { orderBy: { id: "asc" } } } satisfies Prisma.OrderInclude;
