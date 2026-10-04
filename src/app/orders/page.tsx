@@ -48,7 +48,7 @@ export default async function OrdersPage() {
           <article className="order" key={o.id}>
             <header>
               <b>{o.ref}</b>
-              <span className={`pill ${o.status}`}>{o.status === "paid" ? "Paid (test)" : o.status === "pending" ? "Awaiting payment" : "Payment failed"}</span>
+              <span className={`pill ${o.status}`}>{o.status === "paid" ? "Paid" : o.status === "pending" ? "Awaiting payment" : "Payment failed"}</span>
             </header>
             <span className="small">{o.createdAt.toLocaleString("en-NG", { dateStyle: "medium", timeStyle: "short" })} · to {o.area}</span>
             {o.items.map((l) => (
