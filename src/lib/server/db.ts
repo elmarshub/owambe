@@ -7,6 +7,7 @@ const g = globalThis as { prisma?: PrismaClient };
 function connectionString() {
   const raw = process.env.DATABASE_URL;
   if (!raw) throw new Error("DATABASE_URL is not set");
+  if (!URL.canParse(raw)) throw new Error("DATABASE_URL is not a valid postgres:// URL");
   const url = new URL(raw);
   url.searchParams.delete("pgbouncer");
   url.searchParams.delete("connection_limit");

@@ -273,7 +273,7 @@ export function Rail() {
                 </>
               )}
             </div>
-            <div className="hit" data-i={i} role="button" tabIndex={-1} aria-label={`${p.name}, ${naira(p.price)}`} />
+            <button type="button" className="hit" data-i={i} tabIndex={-1} aria-label={`${p.name}, ${naira(p.price)}`} />
           </div>
         ))}
       </div>
