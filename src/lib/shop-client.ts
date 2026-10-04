@@ -2,7 +2,7 @@
 // Sign-in and payment from the browser. Each function has a live path (Supabase / Paystack)
 // and a demo path that behaves like the prototype, chosen by which keys are set.
 import { AUTH_LIVE, PAY_LIVE } from "./config";
-import { DELIVERY, findPiece, type Speed } from "./catalog";
+import { DELIVERY, findPiece, unitPrice, type Speed } from "./catalog";
 import type { BagItem } from "@/store/bag";
 import { supabaseBrowser } from "./supabase/client";
 
@@ -62,7 +62,7 @@ export async function signOut() {
 export interface DeliveryDetails { name: string; phone: string; address: string; area: string; speed: Speed }
 export interface PaidOrder {
   ref: string;
-  items: { name: string; size: string; qty: number; total: number }[];
+  items: { id: string; name: string; size: string; qty: number; acc: boolean; total: number }[];
   subtotal: number;
   delivery: number;
   total: number;
@@ -71,6 +71,17 @@ export interface PaidOrder {
 
 export class PaymentCancelled extends Error {}
 
+/** The bag priced in the browser, for display only. The server re-prices anything that gets charged. */
+function summarise(items: BagItem[], speed: Speed) {
+  const lines = items.flatMap((b) => {
+    const p = findPiece(b.id);
+    return p ? [{ id: b.id, name: p.name, size: b.size, qty: b.qty, acc: b.acc, total: unitPrice(p, b.acc) * b.qty }] : [];
+  });
+  const subtotal = lines.reduce((s, l) => s + l.total, 0);
+  const delivery = DELIVERY[speed].fee;
+  return { items: lines, subtotal, delivery, total: subtotal + delivery };
+}
+
 /**
  * Live: the server saves the order and starts the transaction, Paystack's popup takes the card,
  * then the server verifies with Paystack before we show "It's yours".
@@ -78,13 +89,7 @@ export class PaymentCancelled extends Error {}
 export async function pay(items: BagItem[], delivery: DeliveryDetails): Promise<PaidOrder> {
   if (!PAY_LIVE) {
     await wait(1300);
-    const lines = items.map((b) => {
-      const p = findPiece(b.id)!;
-      return { name: p.name, size: b.size, qty: b.qty, total: p.price * b.qty };
-    });
-    const subtotal = lines.reduce((s, l) => s + l.total, 0);
-    const fee = DELIVERY[delivery.speed].fee;
-    return { ref: "OW-DEMO" + String(Math.floor(1000 + Math.random() * 9000)), items: lines, subtotal, delivery: fee, total: subtotal + fee, demo: true };
+    return { ref: "OW-DEMO" + String(Math.floor(1000 + Math.random() * 9000)), ...summarise(items, delivery.speed), demo: true };
   }
 
   const res = await fetch("/api/checkout", {

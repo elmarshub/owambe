@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { AREAS, DELIVERY, MAX_QTY, SIZES, findPiece } from "./catalog";
+import { AREAS, DELIVERY, MAX_QTY, SIZES, findPiece, unitPrice } from "./catalog";
 
 /** What the browser sends when you press Pay. Prices are NOT accepted from the browser. */
 export const CheckoutInput = z.object({
@@ -35,7 +35,8 @@ export function priceOrder(input: CheckoutInput) {
   const lines: PricedLine[] = input.items.map((it) => {
     const p = findPiece(it.id);
     if (!p) throw new Error(`Unknown piece: ${it.id}`);
-    return { id: p.id, name: p.name, colour: p.colour, size: it.size, qty: it.qty, acc: it.acc, unit: p.price, total: p.price * it.qty };
+    const unit = unitPrice(p, it.acc);
+    return { id: p.id, name: p.name, colour: p.colour, size: it.size, qty: it.qty, acc: it.acc, unit, total: unit * it.qty };
   });
   const subtotal = lines.reduce((s, l) => s + l.total, 0);
   const delivery = DELIVERY[input.delivery.speed].fee;

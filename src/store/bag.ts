@@ -2,7 +2,7 @@
 // The bag lives in localStorage, so it survives a refresh and the Google sign-in redirect.
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { MAX_QTY, cleanBag, findPiece, type BagLine } from "@/lib/catalog";
+import { MAX_QTY, cleanBag, findPiece, unitPrice, type BagLine } from "@/lib/catalog";
 
 export type BagItem = BagLine;
 
@@ -42,4 +42,8 @@ export const useBag = create<BagState>()(
 );
 
 export const bagCount = (items: BagItem[]) => items.reduce((s, b) => s + b.qty, 0);
-export const bagSubtotal = (items: BagItem[]) => items.reduce((s, b) => s + (findPiece(b.id)?.price ?? 0) * b.qty, 0);
+export const bagSubtotal = (items: BagItem[]) =>
+  items.reduce((s, b) => {
+    const p = findPiece(b.id);
+    return s + (p ? unitPrice(p, b.acc) * b.qty : 0);
+  }, 0);

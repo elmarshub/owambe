@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useRef, useState, type FormEvent } from "react";
-import { AREAS, DELIVERY, findPiece, naira, type Speed } from "@/lib/catalog";
+import { AREAS, DELIVERY, accLabel, findPiece, naira, unitPrice, type Speed } from "@/lib/catalog";
 import { AUTH_LIVE, PAY_LIVE } from "@/lib/config";
 import { PaymentCancelled, pay, sendCode, signInWithGoogle, verifyCode, type DeliveryDetails, type PaidOrder } from "@/lib/shop-client";
 import { bagSubtotal, useBag } from "@/store/bag";
@@ -208,8 +208,8 @@ export function PayStep({ details, onPaid }: { details: DeliveryDetails; onPaid:
           const p = findPiece(b.id)!;
           return (
             <div className="row payline" key={`${b.id}-${b.size}-${b.acc}`}>
-              <span><b>{p.name}</b><br /><span className="muted">{p.colour} · {b.size} · {b.qty}</span></span>
-              <b>{naira(p.price * b.qty)}</b>
+              <span><b>{p.name}</b><br /><span className="muted">{p.colour} · {b.size}{b.acc ? ` · ${accLabel(b.id, b.acc)}` : ""} · Qty {b.qty}</span></span>
+              <b>{naira(unitPrice(p, b.acc) * b.qty)}</b>
             </div>
           );
         })}
@@ -244,7 +244,7 @@ export function DoneStep({ order }: { order: PaidOrder }) {
         <h5 id="sheet-title">It&apos;s yours.</h5>
         <p className="small">Your pieces are being pressed and packed. We&apos;ll text you when they leave.</p>
         <div className="totals tagtotals">
-          {order.items.map((l, i) => <div className="row" key={i}><span>{l.name} · {l.size}{l.qty > 1 ? ` × ${l.qty}` : ""}</span><span>{naira(l.total)}</span></div>)}
+          {order.items.map((l, i) => <div className="row" key={i}><span>{l.name} · {l.size}{l.acc ? ` · ${accLabel(l.id, l.acc)}` : ""}{l.qty > 1 ? ` × ${l.qty}` : ""}</span><span>{naira(l.total)}</span></div>)}
           <div className="row"><span>Delivery</span><span>{naira(order.delivery)}</span></div>
           <div className="row big"><span>Paid (test)</span><span>{naira(order.total)}</span></div>
         </div>

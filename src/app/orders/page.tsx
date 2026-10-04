@@ -2,7 +2,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { AUTH_LIVE } from "@/lib/config";
-import { naira } from "@/lib/catalog";
+import { accLabel, naira } from "@/lib/catalog";
 import { supabaseServer } from "@/lib/supabase/server";
 import type { OrderRow } from "@/lib/orders-server";
 import { SignOutButton } from "./SignOutButton";
@@ -45,7 +45,7 @@ export default async function OrdersPage() {
             </header>
             <span className="small">{new Date(o.created_at).toLocaleString("en-NG", { dateStyle: "medium", timeStyle: "short" })} · to {o.delivery.area}</span>
             {o.items.map((l, i) => (
-              <div className="row" key={i}><span>{l.name} · {l.size}{l.qty > 1 ? ` × ${l.qty}` : ""}</span><span>{naira(l.total)}</span></div>
+              <div className="row" key={i}><span>{l.name} · {l.size}{l.acc ? ` · ${accLabel(l.id, l.acc)}` : ""}{l.qty > 1 ? ` × ${l.qty}` : ""}</span><span>{naira(l.total)}</span></div>
             ))}
             <div className="row big"><span>Total</span><span>{naira(o.total)}</span></div>
           </article>
