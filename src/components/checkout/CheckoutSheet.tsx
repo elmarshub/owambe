@@ -1,6 +1,4 @@
 "use client";
-// Checkout: sign in (email code or Google) → delivery → review and pay → order confirmed.
-// Sign-in is only asked for here, so browsing and the fitting room stay open to everyone.
 import { useEffect, useState } from "react";
 import { AUTH_LIVE } from "@/lib/config";
 import type { DeliveryDetails, PaidOrder } from "@/lib/shop-client";
@@ -18,7 +16,7 @@ export function CheckoutSheet() {
   const [details, setDetails] = useState<DeliveryDetails>({ name: "", phone: "", address: "", area: "Lekki", speed: "std" });
   const [order, setOrder] = useState<PaidOrder | null>(null);
 
-  // Each time the sheet opens, start at the right place for whoever is signed in.
+  // Reset the step whenever the sheet opens; adjusting state during render avoids an extra effect pass.
   const [wasOpen, setWasOpen] = useState(false);
   if (sheetOpen !== wasOpen) {
     setWasOpen(sheetOpen);

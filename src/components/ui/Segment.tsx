@@ -7,7 +7,6 @@ interface Props<T extends string> {
   onChange: (v: T) => void;
 }
 
-/** A pill-shaped segmented control (On hanger / On dummy, Front / Back, build, height). */
 export function Segment<T extends string>({ label, value, options, onChange }: Props<T>) {
   return (
     <div className="seg" role="group" aria-label={label}>
